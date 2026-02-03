@@ -131,7 +131,7 @@ export const ContactForm: React.FC = () => {
         // @ts-ignore
         window.gtag('event', 'Woyable_Form_Gonderimi', {
           'event_callback': () => {
-            // Optional: console.log('GA Event sent');
+            console.log('✅ GA Event sent: Woyable_Form_Gonderimi');
           },
           'event_timeout': 2000,
         });
