@@ -23,7 +23,12 @@ export const ContactForm: React.FC = () => {
     phone: '',
     service: '',
     message: '',
-    email: '' // Added email field as per requirement "mails for each submission"
+    email: '', // Added email field as per requirement "mails for each submission"
+    // Tracking
+    utm_source: '',
+    utm_medium: '',
+    utm_campaign: '',
+    gclid: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -32,20 +37,30 @@ export const ContactForm: React.FC = () => {
   // Debounced form data for auto-saving
   const debouncedFormData = useDebounce(formData, 1000);
 
-  // Load package from URL
+  // Load package from URL and Tracking Params
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const updates: any = {};
+
+    // Package selection
     const pkg = params.get('package');
     if (pkg) {
-      // Map package names to service values if necessary, or just set strictly
-      // Assuming package names overlap with values or logic needed
-      // Simple mapping for demonstration based on previous select values:
-      // web-design, ecommerce, custom-dev, ads, social
       const validServices = ['web-design', 'ecommerce', 'custom-dev', 'ads', 'social', 'other'];
       if (validServices.includes(pkg)) {
-        setFormData(prev => ({ ...prev, service: pkg }));
+        updates.service = pkg;
       }
     }
+
+    // Capture Tracking Params
+    if (params.get('utm_source')) updates.utm_source = params.get('utm_source');
+    if (params.get('utm_medium')) updates.utm_medium = params.get('utm_medium');
+    if (params.get('utm_campaign')) updates.utm_campaign = params.get('utm_campaign');
+    if (params.get('gclid')) updates.gclid = params.get('gclid');
+
+    if (Object.keys(updates).length > 0) {
+      setFormData(prev => ({ ...prev, ...updates }));
+    }
+
   }, []);
 
   // Auto-save effect
@@ -109,7 +124,12 @@ export const ContactForm: React.FC = () => {
         message: formData.message,
         email: formData.email,
         status: 'submitted',
-        created_at: new Date().toISOString() // Update time to now for submission
+        created_at: new Date().toISOString(),
+        // Tracking (Optional columns in DB)
+        utm_source: formData.utm_source || null,
+        utm_medium: formData.utm_medium || null,
+        utm_campaign: formData.utm_campaign || null,
+        gclid: formData.gclid || null
       };
 
       if (submissionId) {
@@ -121,6 +141,34 @@ export const ContactForm: React.FC = () => {
         await supabase
           .from('form_submissions')
           .insert([payload]);
+      }
+
+      // Email Notification (FormSubmit.co)
+      try {
+        fetch("https://formsubmit.co/ajax/ahmetcan.1855@gmail.com", {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            Ad_Soyad: formData.name,
+            Email: formData.email,
+            Telefon: formData.phone,
+            Hizmet: formData.service,
+            Mesaj: formData.message,
+            _subject: `Yeni Talep: ${formData.name}`,
+            _template: "table",
+            _captcha: "false",
+            // Tracking Params for Email
+            Kaynak: formData.utm_source,
+            Arac: formData.utm_medium,
+            Kampanya: formData.utm_campaign,
+            Gclid: formData.gclid
+          })
+        }).catch(err => console.error("Email send warning:", err));
+      } catch (err) {
+        console.error("Email trigger failed:", err);
       }
 
       // Simulate email sending trigger via Supabase Edge Function or similar would go here
@@ -138,7 +186,15 @@ export const ContactForm: React.FC = () => {
       }
 
       setIsSubmitted(true);
-      setFormData({ name: '', phone: '', service: '', message: '', email: '' });
+      // Reset form but keep tracking params
+      setFormData(prev => ({
+        ...prev,
+        name: '',
+        phone: '',
+        service: '',
+        message: '',
+        email: ''
+      }));
       setSubmissionId(null);
     } catch (error) {
       console.error("Error submitting form:", error);

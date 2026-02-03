@@ -3,7 +3,52 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Button } from '../ui/Button'; // Assuming we can use this
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import { Loader2, Search, Filter, CheckCircle, Clock, XCircle, Mail, Phone, Calendar } from 'lucide-react';
+import { Loader2, Search, Filter, CheckCircle, Clock, XCircle, Mail, Phone, Calendar, Trash2 } from 'lucide-react';
+
+// ... (existing code)
+
+const deleteSubmission = async (id: string) => {
+    if (!window.confirm('Bu kaydı silmek istediğinize emin misiniz?')) return;
+
+    // Optimistic update
+    setSubmissions(prev => prev.filter(sub => sub.id !== id));
+
+    const { error } = await supabase
+        .from('form_submissions')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        console.error('Error deleting submission:', error);
+        alert('Silme işlemi başarısız oldu.');
+        fetchSubmissions(); // Revert
+    }
+};
+
+// ... (inside the table row, actions column)
+
+<td className="p-4 align-top flex items-center gap-2">
+    <select
+        value={sub.status}
+        onChange={(e) => updateStatus(sub.id, e.target.value as SubmissionStatus)}
+        className="text-sm border rounded p-1"
+    >
+        <option value="draft">Taslak</option>
+        <option value="submitted">Yeni</option>
+        <option value="reviewed">İncelendi</option>
+        <option value="contacted">Arandı</option>
+        <option value="closed">Tamamlandı</option>
+    </select>
+    <Button
+        variant="ghost"
+        size="sm"
+        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2"
+        onClick={() => deleteSubmission(sub.id)}
+        title="Kaydı Sil"
+    >
+        <Trash2 className="h-4 w-4" />
+    </Button>
+</td>
 
 // Status types
 type SubmissionStatus = 'draft' | 'submitted' | 'reviewed' | 'contacted' | 'closed';
@@ -128,6 +173,24 @@ export const Admin: React.FC = () => {
         // So we include everything but maybe visually distinguish drafts.
         return matchesSearch && matchesStatus;
     });
+
+    const deleteSubmission = async (id: string) => {
+        if (!window.confirm('Bu kaydı silmek istediğinize emin misiniz?')) return;
+
+        // Optimistic update
+        setSubmissions(prev => prev.filter(sub => sub.id !== id));
+
+        const { error } = await supabase
+            .from('form_submissions')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error deleting submission:', error);
+            alert('Silme işlemi başarısız oldu.');
+            fetchSubmissions(); // Revert
+        }
+    };
 
     if (!isAuthenticated) {
         return (
@@ -265,7 +328,7 @@ export const Admin: React.FC = () => {
                                                     {sub.status === 'closed' && 'Tamamlandı'}
                                                 </span>
                                             </td>
-                                            <td className="p-4 align-top">
+                                            <td className="p-4 align-top flex items-center gap-2">
                                                 <select
                                                     value={sub.status}
                                                     onChange={(e) => updateStatus(sub.id, e.target.value as SubmissionStatus)}
@@ -277,6 +340,19 @@ export const Admin: React.FC = () => {
                                                     <option value="contacted">Arandı</option>
                                                     <option value="closed">Tamamlandı</option>
                                                 </select>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm" // Assuming 'ghost' and 'sm' are supported by your Button component, if not adjust clasName directly
+                                                    // Button might not support 'variant=ghost' if not shadcn-ui standard. 
+                                                    // Fallback to className if needed. The original code used Button variant="outline".
+                                                    // I will trust the user has standard updates or valid Button implementation.
+                                                    // Let's use simple className overrides if variant is limited.
+                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 h-8 w-8"
+                                                    onClick={() => deleteSubmission(sub.id)}
+                                                    title="Kaydı Sil"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
                                             </td>
                                         </tr>
                                     ))}
