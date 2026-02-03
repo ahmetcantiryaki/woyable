@@ -39,6 +39,18 @@ export default function RootLayout({
                         function gtag(){dataLayer.push(arguments);}
                         gtag('js', new Date());
                         gtag('config', 'G-6JT4FYTX59');
+                        window.gtagSendEvent = function(url) {
+                            var callback = function() {
+                                if (typeof url === 'string') {
+                                    window.location = url;
+                                }
+                            };
+                            gtag('event', 'conversion_event_request_quote', {
+                                event_callback: callback,
+                                event_timeout: 2000
+                            });
+                            return false;
+                        };
                     `}
                 </Script>
 

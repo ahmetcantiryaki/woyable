@@ -173,15 +173,22 @@ export const ContactForm: React.FC = () => {
 
       // Simulate email sending trigger via Supabase Edge Function or similar would go here
       // For now, client side success
-      // Google Analytics Event
-      // @ts-ignore
-      if (typeof window !== 'undefined' && window.gtag) {
-        // @ts-ignore
-        window.gtag('event', 'Woyable_Form_Gonderimi', {
-          'event_callback': () => {
+      // Google Analytics Events (mevcut + conversion)
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        const gtag = (window as any).gtag;
+        // Mevcut: form gönderimi eventi
+        gtag('event', 'Woyable_Form_Gonderimi', {
+          event_callback: () => {
             console.log('✅ GA Event sent: Woyable_Form_Gonderimi');
           },
-          'event_timeout': 2000,
+          event_timeout: 2000,
+        });
+        // Ek: conversion_event_request_quote (teklif talebi – gecikmeli callback destekli)
+        gtag('event', 'conversion_event_request_quote', {
+          event_callback: () => {
+            // İsteğe bağlı: burada url verilirse yönlendirme yapılabilir
+          },
+          event_timeout: 2000,
         });
       }
 
