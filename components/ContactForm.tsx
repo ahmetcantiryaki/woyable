@@ -125,6 +125,18 @@ export const ContactForm: React.FC = () => {
 
       // Simulate email sending trigger via Supabase Edge Function or similar would go here
       // For now, client side success
+      // Google Analytics Event
+      // @ts-ignore
+      if (typeof window !== 'undefined' && window.gtag) {
+        // @ts-ignore
+        window.gtag('event', 'Woyable_Form_Gonderimi', {
+          'event_callback': () => {
+            // Optional: console.log('GA Event sent');
+          },
+          'event_timeout': 2000,
+        });
+      }
+
       setIsSubmitted(true);
       setFormData({ name: '', phone: '', service: '', message: '', email: '' });
       setSubmissionId(null);
