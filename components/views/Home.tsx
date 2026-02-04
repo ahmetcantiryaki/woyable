@@ -206,7 +206,7 @@ export const Home = () => {
             {/* Embedded Form Card */}
             <div className="bg-white rounded-2xl p-6 shadow-2xl text-slate-900 max-w-md w-full mx-auto lg:ml-auto">
               <h3 className="text-xl font-bold mb-4">Hemen Teklif Alın</h3>
-              <ContactForm />
+              <ContactForm variant="minimal" />
             </div>
           </div>
         </div>

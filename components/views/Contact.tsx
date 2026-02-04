@@ -5,75 +5,66 @@ import { ContactForm } from '../ContactForm';
 
 export const Contact: React.FC = () => {
   return (
-    <div className="bg-slate-50 min-h-screen py-20">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h1 className="text-4xl font-bold text-slate-900 mb-4">İletişime Geçin</h1>
-          <p className="text-lg text-slate-600">
-            Projenizi anlatın, size özel çözümler sunalım. Aşağıdaki formu doldurun, en kısa sürede dönüş yapalım.
+    <div className="bg-slate-50 min-h-screen py-16">
+      <div className="container mx-auto px-4">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">İletişime Geçin</h1>
+          <p className="text-slate-600 text-sm">
+            Projeleriniz için yanınızdayız.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Contact Info */}
-          <div className="lg:col-span-1 space-y-6">
-            <Card className="bg-white shadow-md border-slate-200">
-              <CardHeader>
-                <CardTitle>İletişim Bilgileri</CardTitle>
-                <CardDescription>Bize her zaman ulaşabilirsiniz.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="bg-blue-100 p-2 rounded-lg">
-                    <Mail className="h-5 w-5 text-blue-600" />
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6">
+          {/* Contact Info - Side / Top */}
+          <div className="md:col-span-4 space-y-4">
+            <Card className="bg-white shadow-sm border-slate-200">
+              <CardContent className="p-5 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-100 p-2 rounded-lg shrink-0">
+                    <Mail className="h-4 w-4 text-blue-600" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-900">E-Posta</h4>
-                    <p className="text-sm text-slate-600">info@woyable.com</p>
-                    <p className="text-sm text-slate-600">destek@woyable.com</p>
+                    <h4 className="font-semibold text-slate-900 text-sm">E-Posta</h4>
+                    <p className="text-xs text-slate-500">info@woyable.com</p>
                   </div>
                 </div>
 
-
-
-                <div className="flex items-start gap-4">
-                  <div className="bg-blue-100 p-2 rounded-lg">
-                    <MapPin className="h-5 w-5 text-blue-600" />
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-100 p-2 rounded-lg shrink-0">
+                    <MapPin className="h-4 w-4 text-blue-600" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-900">Konum</h4>
-                    <p className="text-sm text-slate-600">Levent, İstanbul</p>
-                    <p className="text-sm text-slate-600">Türkiye</p>
+                    <h4 className="font-semibold text-slate-900 text-sm">Konum</h4>
+                    <p className="text-xs text-slate-500">Levent, İstanbul</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <div className="bg-blue-600 rounded-xl p-6 text-white shadow-lg">
-              <h3 className="font-bold text-lg mb-2">Hemen Başlayalım</h3>
-              <p className="text-blue-100 text-sm mb-4">
-                Aklınızdaki proje için beklemeyin. Ücretsiz ön analiz ve fiyat teklifi için bize yazın.
+            <div className="bg-blue-600 rounded-lg p-5 text-white shadow-md">
+              <h3 className="font-bold text-base mb-1">Hemen Başlayalım</h3>
+              <p className="text-blue-100 text-xs">
+                Fikirlerinizi duymak için sabırsızlanıyoruz.
               </p>
             </div>
           </div>
 
-          {/* Form */}
-          <div className="lg:col-span-2">
-            <Card className="bg-white shadow-md border-slate-200 h-full">
-              <CardHeader>
-                <CardTitle>Proje Talep Formu</CardTitle>
-                <CardDescription>
-                  Formu doldurun, en kısa sürede size dönüş yapalım.
+          {/* Form - Main Focus but Compact */}
+          <div className="md:col-span-8">
+            <Card className="bg-white shadow-sm border-slate-200">
+              <CardHeader className="pb-3 border-b border-slate-50">
+                <CardTitle className="text-lg">Proje Formu</CardTitle>
+                <CardDescription className="text-xs">
+                  Detayları paylaşın, sizinle iletişime geçelim.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-5">
                 <ContactForm />
               </CardContent>
             </Card>
           </div>
         </div>
       </div>
-
     </div>
   );
 };

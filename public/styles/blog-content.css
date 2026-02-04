@@ -1,0 +1,107 @@
+/* Custom Blog Content Styles */
+.blog-content {
+    color: #334155;
+    /* slate-700 */
+    font-family: 'Inter', sans-serif;
+    /* Ensure you have a good font */
+    line-height: 1.8;
+    font-size: 1.125rem;
+    /* lg */
+}
+
+.blog-content p {
+    margin-bottom: 1.5em;
+    font-weight: 300;
+    /* Light font for elegance */
+    color: #475569;
+    /* slate-600 */
+}
+
+.blog-content strong {
+    color: #0f172a;
+    /* slate-900 */
+    font-weight: 700;
+}
+
+.blog-content h2 {
+    font-size: 1.875rem;
+    /* 3xl */
+    font-weight: 800;
+    color: #1e293b;
+    /* slate-800 */
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.025em;
+    border-bottom: 2px solid #f1f5f9;
+    /* slate-100 */
+    padding-bottom: 0.5rem;
+    scroll-margin-top: 100px;
+    /* Prevent being cut off by top edge */
+}
+
+.blog-content h3 {
+    font-size: 1.5rem;
+    /* 2xl */
+    font-weight: 700;
+    color: #334155;
+    /* slate-700 */
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    scroll-margin-top: 100px;
+    /* Prevent being cut off by top edge */
+}
+
+.blog-content ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.blog-content ol {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.blog-content li {
+    margin-bottom: 0.5rem;
+    color: #475569;
+}
+
+.blog-content blockquote {
+    border-left: 4px solid #facc15;
+    /* yellow-400 */
+    padding-left: 1.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    font-style: italic;
+    background: linear-gradient(to right, #fefce8, transparent);
+    /* yellow-50 */
+    color: #4b5563;
+    /* slate-600 */
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.blog-content a {
+    color: #2563eb;
+    /* blue-600 */
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.blog-content a:hover {
+    border-bottom-color: #2563eb;
+}
+
+.blog-content img {
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    height: auto;
+}

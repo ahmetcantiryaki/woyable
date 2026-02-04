@@ -15,6 +15,7 @@ export const Navbar = () => {
     { label: 'Hizmetlerimiz', href: '/hizmetlerimiz' },
     { label: 'Paketlerimiz', href: '/paketlerimiz' },
     { label: 'Kurumsal', href: '/kurumsal' },
+    { label: 'Blog', href: '/blog' },
   ];
 
   const isActive = (href: string) => {

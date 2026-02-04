@@ -24,10 +24,11 @@ export const Footer = () => {
           <div>
             <h4 className="font-semibold text-slate-900 mb-4">Hızlı Erişim</h4>
             <ul className="space-y-2 text-sm text-slate-600">
-              <li><Link href="/" className="hover:text-blue-600">Anasayfa</Link></li>
-              <li><Link href="/kurumsal" className="hover:text-blue-600">Hakkımızda</Link></li>
-              <li><Link href="/hizmetlerimiz" className="hover:text-blue-600">Hizmetlerimiz</Link></li>
-              <li><Link href="/iletisim" className="hover:text-blue-600">İletişim</Link></li>
+              <li><Link href="/" className="hover:text-blue-600 transition-colors">Anasayfa</Link></li>
+              <li><Link href="/kurumsal" className="hover:text-blue-600 transition-colors">Hakkımızda</Link></li>
+              <li><Link href="/hizmetlerimiz" className="hover:text-blue-600 transition-colors">Hizmetlerimiz</Link></li>
+              <li><Link href="/blog" className="hover:text-blue-600 transition-colors">Blog</Link></li>
+              <li><Link href="/iletisim" className="hover:text-blue-600 transition-colors">İletişim</Link></li>
             </ul>
           </div>
 
@@ -35,10 +36,10 @@ export const Footer = () => {
           <div>
             <h4 className="font-semibold text-slate-900 mb-4">Hizmetlerimiz</h4>
             <ul className="space-y-2 text-sm text-slate-600">
-              <li>Web Tasarım & Yazılım</li>
-              <li>Özel CRM Çözümleri</li>
-              <li>Google Ads Yönetimi</li>
-              <li>Sosyal Medya Yönetimi</li>
+              <li><Link href="/hizmetlerimiz/web-tasarim" className="hover:text-blue-600 transition-colors">Web Tasarım & Yazılım</Link></li>
+              <li><Link href="/hizmetlerimiz/ozel-yazilim-cozumleri" className="hover:text-blue-600 transition-colors">Özel Yazılım Çözümleri</Link></li>
+              <li><Link href="/hizmetlerimiz/sosyal-medya-yonetimi" className="hover:text-blue-600 transition-colors">Sosyal Medya Yönetimi</Link></li>
+              <li><Link href="/hizmetlerimiz/e-ticaret-ve-pazaryeri-yonetimi" className="hover:text-blue-600 transition-colors">E-Ticaret Yönetimi</Link></li>
             </ul>
           </div>
 

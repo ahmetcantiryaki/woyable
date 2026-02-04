@@ -1,35 +1,20 @@
-'use client';
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from './ui/Button';
 import { Send, Loader2 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-
-// Helper to debounce function calls
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-  return debouncedValue;
-}
+import { sendContactForm } from '../actions/contact';
 
 interface ContactFormProps {
   defaultService?: string;
+  variant?: 'full' | 'minimal';
 }
 
-export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '' }) => {
+export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '', variant = 'full' }) => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     service: defaultService,
     message: '',
-    email: '', // Added email field as per requirement "mails for each submission"
+    email: '',
     // Tracking
     utm_source: '',
     utm_medium: '',
@@ -38,10 +23,6 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '' })
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submissionId, setSubmissionId] = useState<string | null>(null);
-
-  // Debounced form data for auto-saving
-  const debouncedFormData = useDebounce(formData, 1000);
 
   // Load package from URL and Tracking Params
   useEffect(() => {
@@ -55,8 +36,6 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '' })
       if (validServices.includes(pkg)) {
         updates.service = pkg;
       }
-    } else if (defaultService) {
-      // If no url param, ensure we keep the defaultService (React state init handles it, but good to be safe if this runs)
     }
 
     // Capture Tracking Params
@@ -71,49 +50,6 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '' })
 
   }, []);
 
-  // Auto-save effect
-  useEffect(() => {
-    const saveDraft = async () => {
-      // Only save if there is at least some data
-      if (!formData.phone && !formData.message) return;
-
-      try {
-        const payload = {
-          full_name: formData.name || '-',
-          phone: formData.phone,
-          service: formData.service,
-          message: formData.message,
-          email: formData.email || '-',
-          status: 'draft',
-          updated_at: new Date().toISOString(), // Ensure schema supports this or ignore
-        };
-
-        if (submissionId) {
-          await supabase
-            .from('form_submissions')
-            .update(payload)
-            .eq('id', submissionId);
-        } else {
-          const { data, error } = await supabase
-            .from('form_submissions')
-            .insert([payload])
-            .select()
-            .single();
-
-          if (data && !error) {
-            setSubmissionId(data.id);
-          }
-        }
-      } catch (error) {
-        console.error("Error auto-saving draft:", error);
-      }
-    };
-
-    saveDraft();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedFormData]);
-
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
@@ -124,94 +60,41 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '' })
     setIsSubmitting(true);
 
     try {
-      // Final update with 'submitted' status
-      // Final update with 'submitted' status
-      const payload = {
-        full_name: formData.name || 'Ziyaretçi',
-        phone: formData.phone,
-        service: formData.service,
-        message: formData.message,
-        email: formData.email || 'noreply@woyable.com',
-        status: 'submitted',
-        created_at: new Date().toISOString(),
-        // Tracking (Optional columns in DB)
-        utm_source: formData.utm_source || null,
-        utm_medium: formData.utm_medium || null,
-        utm_campaign: formData.utm_campaign || null,
-        gclid: formData.gclid || null
-      };
+      const data = new FormData();
+      // If minimal, we don't send name/email from state, backend handles defaults
+      // But we can also send empty strings and let backend decide
+      data.append('name', formData.name);
+      data.append('email', formData.email);
+      data.append('phone', formData.phone);
+      data.append('service', formData.service);
+      data.append('message', formData.message);
+      data.append('variant', variant); // Inform backend about variant if needed logic there
 
-      if (submissionId) {
-        await supabase
-          .from('form_submissions')
-          .update(payload)
-          .eq('id', submissionId);
+      if (formData.utm_source) data.append('subject', `(Campaign: ${formData.utm_campaign || 'N/A'})`);
+
+      const response = await sendContactForm(null, data);
+
+      if (response.success) {
+        // Google Analytics Events
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+          const gtag = (window as any).gtag;
+          gtag('event', 'Woyable_Form_Gonderimi', { event_timeout: 2000 });
+          gtag('event', 'conversion_event_request_quote', { event_timeout: 2000 });
+        }
+
+        setIsSubmitted(true);
+        // Reset form basics
+        setFormData(prev => ({
+          ...prev,
+          name: '',
+          phone: '',
+          service: '',
+          message: '',
+          email: ''
+        }));
       } else {
-        await supabase
-          .from('form_submissions')
-          .insert([payload]);
+        alert(response.message || "Bir hata oluştu.");
       }
-
-      // Email Notification (FormSubmit.co)
-      try {
-        fetch("https://formsubmit.co/ajax/ahmetcan.1855@gmail.com", {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            Ad_Soyad: formData.name,
-            Email: formData.email,
-            Telefon: formData.phone,
-            Hizmet: formData.service,
-            Mesaj: formData.message,
-            _subject: `Yeni Talep: ${formData.name}`,
-            _template: "table",
-            _captcha: "false",
-            // Tracking Params for Email
-            Kaynak: formData.utm_source,
-            Arac: formData.utm_medium,
-            Kampanya: formData.utm_campaign,
-            Gclid: formData.gclid
-          })
-        }).catch(err => console.error("Email send warning:", err));
-      } catch (err) {
-        console.error("Email trigger failed:", err);
-      }
-
-      // Simulate email sending trigger via Supabase Edge Function or similar would go here
-      // For now, client side success
-      // Google Analytics Events (mevcut + conversion)
-      if (typeof window !== 'undefined' && (window as any).gtag) {
-        const gtag = (window as any).gtag;
-        // Mevcut: form gönderimi eventi
-        gtag('event', 'Woyable_Form_Gonderimi', {
-          event_callback: () => {
-            console.log('✅ GA Event sent: Woyable_Form_Gonderimi');
-          },
-          event_timeout: 2000,
-        });
-        // Ek: conversion_event_request_quote (teklif talebi – gecikmeli callback destekli)
-        gtag('event', 'conversion_event_request_quote', {
-          event_callback: () => {
-            // İsteğe bağlı: burada url verilirse yönlendirme yapılabilir
-          },
-          event_timeout: 2000,
-        });
-      }
-
-      setIsSubmitted(true);
-      // Reset form but keep tracking params
-      setFormData(prev => ({
-        ...prev,
-        name: '',
-        phone: '',
-        service: '',
-        message: '',
-        email: ''
-      }));
-      setSubmissionId(null);
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("Bir hata oluştu. Lütfen tekrar deneyin.");
@@ -242,11 +125,42 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '' })
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      {/* Name Field - Only visible in full variant */}
+      {variant === 'full' && (
+        <div className="space-y-1">
+          <label htmlFor="name" className="text-sm font-medium text-slate-700">Ad Soyad</label>
+          <input
+            id="name"
+            type="text"
+            required
+            value={formData.name}
+            onChange={handleChange}
+            className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+            placeholder="Adınız Soyadınız"
+          />
+        </div>
+      )}
 
+      {/* Email Field - Only visible in full variant */}
+      {variant === 'full' && (
+        <div className="space-y-1">
+          <label htmlFor="email" className="text-sm font-medium text-slate-700">E-Posta Adresi</label>
+          <input
+            id="email"
+            type="email"
+            required
+            value={formData.email}
+            onChange={handleChange}
+            className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+            placeholder="ornek@sirket.com"
+          />
+        </div>
+      )}
 
       {/* Phone Field */}
       <div className="space-y-1">
+        <label htmlFor="phone" className="text-sm font-medium text-slate-700">Telefon</label>
         <input
           id="phone"
           type="tel"
@@ -254,12 +168,13 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '' })
           value={formData.phone}
           onChange={handleChange}
           className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
-          placeholder="Telefon Numaranız"
+          placeholder="05XX XXX XX XX"
         />
       </div>
 
       {/* Service Selection */}
       <div className="space-y-1">
+        <label htmlFor="service" className="text-sm font-medium text-slate-700">İlgilendiğiniz Hizmet</label>
         <select
           id="service"
           value={formData.service}
@@ -281,18 +196,19 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '' })
 
       {/* Message Field */}
       <div className="space-y-1">
+        <label htmlFor="message" className="text-sm font-medium text-slate-700">Mesajınız</label>
         <textarea
           id="message"
-          required
-          rows={3}
+          required={variant === 'full'} // Optional in minimal if user wants just call? Actually likely required still to prevent spam
+          rows={variant === 'minimal' ? 3 : 4}
           value={formData.message}
           onChange={handleChange}
           className="flex w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all resize-none"
-          placeholder="Mesajınız..."
+          placeholder="Projenizden bahsedin..."
         />
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -300,7 +216,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '' })
           </>
         ) : (
           <>
-            Gönder <Send className="ml-2 h-3 w-3" />
+            {variant === 'minimal' ? 'Hemen Teklif Al' : 'Gönder'} <Send className="ml-2 h-3 w-3" />
           </>
         )}
       </Button>

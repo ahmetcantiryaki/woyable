@@ -31,30 +31,51 @@ export const ServiceLayout: React.FC<ServiceLayoutProps> = ({
 }) => {
     return (
         <div className="min-h-screen bg-slate-50">
-            {/* Hero Section */}
-            <section className="bg-slate-900 text-white py-12 lg:py-16 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/40 to-slate-900 pointer-events-none" />
+            {/* Hero Section - Redesigned Light Theme */}
+            <section className="relative py-20 lg:py-24 overflow-hidden bg-white">
+                {/* Background Decor */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    <div className="absolute -top-[20%] -right-[10%] w-[70%] h-[70%] rounded-full bg-gradient-to-br from-blue-50 to-indigo-50 blur-3xl opacity-60" />
+                    <div className="absolute top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tr from-purple-50 to-blue-50 blur-3xl opacity-60" />
+                    <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-50 to-transparent" />
+                </div>
 
                 <div className="container mx-auto px-4 md:px-6 relative z-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         {/* Left Content */}
-                        <div className="space-y-4">
-                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+                        <div className="space-y-6">
+                            <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold uppercase tracking-wide">
+                                Woyable Digital
+                            </div>
+                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
                                 {title}
                             </h1>
-                            <p className="text-base md:text-lg text-slate-300 max-w-xl leading-relaxed">
+                            <p className="text-lg md:text-xl text-slate-600 max-w-xl leading-relaxed">
                                 {description}
                             </p>
+
+                            {/* Feature List (Optional visual filler) */}
+                            <div className="flex flex-wrap gap-4 pt-2">
+                                <div className="flex items-center gap-2 text-sm text-slate-500">
+                                    <div className="w-2 h-2 rounded-full bg-green-500" /> Profesyonel Çözümler
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-slate-500">
+                                    <div className="w-2 h-2 rounded-full bg-blue-500" /> Hızlı Teslimat
+                                </div>
+                            </div>
                         </div>
 
                         {/* Right Form */}
                         <div className="lg:pl-12 flex justify-center lg:justify-end">
-                            <div className="bg-white rounded-xl shadow-2xl p-5 text-slate-900 w-full max-w-sm">
-                                <h3 className="text-xl font-bold mb-1">Hemen Teklif Alın</h3>
-                                <p className="text-slate-600 mb-4 text-xs">
-                                    Projeniz için ücretsiz danışmanlık ve fiyat teklifi alın.
+                            <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 text-slate-900 w-full max-w-sm relative">
+                                {/* Decorative glow behind form */}
+                                <div className="absolute -inset-1 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl blur opacity-30 -z-10" />
+
+                                <h3 className="text-xl font-bold mb-2 text-slate-900">Hemen Teklif Alın</h3>
+                                <p className="text-slate-500 mb-5 text-sm">
+                                    Projeniz için ücretsiz analiz ve fiyat teklifi.
                                 </p>
-                                <ContactForm defaultService={serviceKey} />
+                                <ContactForm defaultService={serviceKey} variant="minimal" />
                             </div>
                         </div>
                     </div>

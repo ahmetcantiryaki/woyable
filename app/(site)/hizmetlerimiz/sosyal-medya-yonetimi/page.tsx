@@ -67,7 +67,7 @@ export default function SocialMediaPage() {
             <div className="grid md:grid-cols-2 gap-8 my-10">
                 <div>
                     <div className="bg-indigo-100 p-3 rounded-xl w-fit mb-4">
-                        <Map className="h-6 w-6 text-indigo-600" />
+                        <MapIcon className="h-6 w-6 text-indigo-600" />
                     </div>
                     <h4 className="text-xl font-semibold mb-2">Stratejik Planlama</h4>
                     <p className="text-slate-600">
