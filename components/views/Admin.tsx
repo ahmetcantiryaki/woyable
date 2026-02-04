@@ -37,6 +37,7 @@ export const Admin: React.FC = () => {
     const [submissions, setSubmissions] = useState<Submission[]>([]);
     const [loading, setLoading] = useState(false);
     const [filterStatus, setFilterStatus] = useState<string>('all');
+    const [filterService, setFilterService] = useState<string>('all');
     const [searchTerm, setSearchTerm] = useState('');
 
     // Check for existing session
@@ -130,11 +131,9 @@ export const Admin: React.FC = () => {
             sub.phone?.includes(searchTerm);
 
         const matchesStatus = filterStatus === 'all' || sub.status === filterStatus;
+        const matchesService = filterService === 'all' || sub.service === filterService;
 
-        // Filter out drafts unless specifically looked for, usually admins want to see submitted
-        // But user asked to see "button not pressed" data (drafts).
-        // So we include everything but maybe visually distinguish drafts.
-        return matchesSearch && matchesStatus;
+        return matchesSearch && matchesStatus && matchesService;
     });
 
     const deleteSubmission = async (id: string) => {
@@ -200,29 +199,53 @@ export const Admin: React.FC = () => {
                 </div>
 
                 {/* Filters */}
-                <div className="bg-white p-4 rounded-lg shadow flex flex-col md:flex-row gap-4 justify-between">
-                    <div className="relative w-full md:w-1/3">
+                <div className="bg-white p-4 rounded-lg shadow flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
+                    <div className="relative w-full lg:w-1/3">
                         <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                         <input
                             placeholder="İsim, E-posta veya Telefon Ara..."
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
-                            className="pl-9 w-full h-10 rounded border border-slate-300"
+                            className="pl-9 w-full h-10 rounded border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-                    <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-                        {['all', 'draft', 'submitted', 'reviewed', 'contacted', 'closed'].map(status => (
-                            <button
-                                key={status}
-                                onClick={() => setFilterStatus(status)}
-                                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap capitalize ${filterStatus === status
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                                    }`}
+
+                    <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+                        {/* Service Filter */}
+                        <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
+                            <span className="text-sm font-medium text-slate-500 whitespace-nowrap">Hizmet:</span>
+                            <select
+                                value={filterService}
+                                onChange={(e) => setFilterService(e.target.value)}
+                                className="h-10 rounded border border-slate-300 text-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
-                                {status === 'all' ? 'Tümü' : status}
-                            </button>
-                        ))}
+                                <option value="all">Tümü</option>
+                                <option value="web-design">Web Tasarım</option>
+                                <option value="ecommerce">E-Ticaret</option>
+                                <option value="social">Sosyal Medya</option>
+                                <option value="ads">Google Ads</option>
+                                <option value="branding">Kurumsal Kimlik</option>
+                                <option value="printing">Baskı & Etkinlik</option>
+                                <option value="custom-dev">Özel Yazılım</option>
+                                <option value="other">Diğer</option>
+                            </select>
+                        </div>
+
+                        {/* Status Filter */}
+                        <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
+                            {['all', 'draft', 'submitted', 'reviewed', 'contacted', 'closed'].map(status => (
+                                <button
+                                    key={status}
+                                    onClick={() => setFilterStatus(status)}
+                                    className={`px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap capitalize transition-colors ${filterStatus === status
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                        }`}
+                                >
+                                    {status === 'all' ? 'Tümü' : status === 'submitted' ? 'Yeni' : status}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
@@ -304,17 +327,13 @@ export const Admin: React.FC = () => {
                                                     <option value="closed">Tamamlandı</option>
                                                 </select>
                                                 <Button
-                                                    variant="ghost"
-                                                    size="sm" // Assuming 'ghost' and 'sm' are supported by your Button component, if not adjust clasName directly
-                                                    // Button might not support 'variant=ghost' if not shadcn-ui standard. 
-                                                    // Fallback to className if needed. The original code used Button variant="outline".
-                                                    // I will trust the user has standard updates or valid Button implementation.
-                                                    // Let's use simple className overrides if variant is limited.
-                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 h-8 w-8"
+                                                    variant="default" // Using default since destructive is not in types, styling via className
+                                                    size="sm"
+                                                    className="bg-red-500 hover:bg-red-600 text-white"
                                                     onClick={() => deleteSubmission(sub.id)}
                                                     title="Kaydı Sil"
                                                 >
-                                                    <Trash2 className="h-4 w-4" />
+                                                    <Trash2 className="h-3 w-3 mr-1" /> Sil
                                                 </Button>
                                             </td>
                                         </tr>

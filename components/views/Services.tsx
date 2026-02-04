@@ -13,37 +13,43 @@ export const Services = () => {
       icon: <Globe className="h-8 w-8 text-blue-600" />,
       title: "Web Başlangıç & Kurumsal Web",
       description: "Küçük işletmelerden büyük firmalara kadar her ölçek için modern, hızlı ve responsive web siteleri.",
-      features: ["Tek Sayfa veya Çok Sayfalı Tasarım", "SEO Altyapısı", "Yönetim Paneli (CMS)", "Mobil Uyumlu Arayüz"]
+      features: ["Tek Sayfa veya Çok Sayfalı Tasarım", "SEO Altyapısı", "Yönetim Paneli (CMS)", "Mobil Uyumlu Arayüz"],
+      href: "/hizmetlerimiz/kurumsal-web-sitesi"
     },
     {
       icon: <ShoppingCart className="h-8 w-8 text-blue-600" />,
       title: "E-Ticaret Pro",
       description: "Online satışa başlamak için ihtiyacınız olan her şey: Ödeme, stok, kargo ve müşteri yönetimi.",
-      features: ["Sınırsız Ürün Yönetimi", "Kredi Kartı Entegrasyonu", "Kargo Entegrasyonu", "Gelişmiş Raporlama"]
+      features: ["Sınırsız Ürün Yönetimi", "Kredi Kartı Entegrasyonu", "Kargo Entegrasyonu", "Gelişmiş Raporlama"],
+      href: "/hizmetlerimiz/e-ticaret"
     },
     {
       icon: <Smartphone className="h-8 w-8 text-blue-600" />,
       title: "Sosyal Medya Yönetimi",
       description: "Markanızın dijital dünyadaki sesi oluyoruz. Profesyonel içerik üretimi ve stratejik yönetim.",
-      features: ["Post & Story Tasarımları", "İçerik Metin Yazarlığı", "Reklam Kampanya Yönetimi", "Aylık Raporlama"]
+      features: ["Post & Story Tasarımları", "İçerik Metin Yazarlığı", "Reklam Kampanya Yönetimi", "Aylık Raporlama"],
+      href: "/hizmetlerimiz/sosyal-medya-yonetimi"
     },
     {
       icon: <PenTool className="h-8 w-8 text-blue-600" />,
       title: "Kurumsal Kimlik & UI",
       description: "Markanızın görsel kimliğini profesyonelce tasarlıyor, akılda kalıcı bir imaj oluşturuyoruz.",
-      features: ["Logo Tasarımı", "Web Arayüz (UI) Tasarımı", "Kurumsal Renk & Font Seçimi", "Kartvizit & Antetli Kağıt"]
+      features: ["Logo Tasarımı", "Web Arayüz (UI) Tasarımı", "Kurumsal Renk & Font Seçimi", "Kartvizit & Antetli Kağıt"],
+      href: "/hizmetlerimiz/kurumsal-kimlik-tasarimi"
     },
     {
       icon: <BarChart className="h-8 w-8 text-blue-600" />,
       title: "Baskı & Etkinlik",
       description: "Fiziksel tanıtım materyalleriniz için yaratıcı tasarım ve baskı çözümleri.",
-      features: ["Tanıtım Bannerları", "Etkinlik Afişleri", "Rollup & Pano Tasarımı", "Broşür & Katalog"]
+      features: ["Tanıtım Bannerları", "Etkinlik Afişleri", "Rollup & Pano Tasarımı", "Broşür & Katalog"],
+      href: "/hizmetlerimiz/baski-etkinlik"
     },
     {
       icon: <Code className="h-8 w-8 text-blue-600" />,
       title: "Özel Yazılım & CRM",
       description: "Şirket içi süreçlerinizi dijitalleştiren, size özel butik yazılım ve otomasyon çözümleri.",
-      features: ["Müşteri Takip Sistemi (CRM)", "Personel Yönetimi", "Özel Raporlama Araçları", "Bulut Tabanlı Altyapı"]
+      features: ["Müşteri Takip Sistemi (CRM)", "Personel Yönetimi", "Özel Raporlama Araçları", "Bulut Tabanlı Altyapı"],
+      href: "/hizmetlerimiz/yazilim-cozumleri"
     }
   ];
 
@@ -80,7 +86,7 @@ export const Services = () => {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full" onClick={() => router.push('/iletisim')}>
+                <Button variant="outline" className="w-full" onClick={() => router.push(service.href)}>
                   Detaylı Bilgi Al
                 </Button>
               </CardFooter>

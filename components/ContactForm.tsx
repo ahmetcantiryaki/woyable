@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from './ui/Button';
 import { Send, Loader2 } from 'lucide-react';
@@ -17,11 +19,15 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-export const ContactForm: React.FC = () => {
+interface ContactFormProps {
+  defaultService?: string;
+}
+
+export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '' }) => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    service: '',
+    service: defaultService,
     message: '',
     email: '', // Added email field as per requirement "mails for each submission"
     // Tracking
@@ -45,10 +51,12 @@ export const ContactForm: React.FC = () => {
     // Package selection
     const pkg = params.get('package');
     if (pkg) {
-      const validServices = ['web-design', 'ecommerce', 'custom-dev', 'ads', 'social', 'other'];
+      const validServices = ['web-design', 'ecommerce', 'custom-dev', 'ads', 'social', 'branding', 'printing', 'other'];
       if (validServices.includes(pkg)) {
         updates.service = pkg;
       }
+    } else if (defaultService) {
+      // If no url param, ensure we keep the defaultService (React state init handles it, but good to be safe if this runs)
     }
 
     // Capture Tracking Params
@@ -67,15 +75,15 @@ export const ContactForm: React.FC = () => {
   useEffect(() => {
     const saveDraft = async () => {
       // Only save if there is at least some data
-      if (!formData.name && !formData.phone && !formData.message && !formData.email) return;
+      if (!formData.phone && !formData.message) return;
 
       try {
         const payload = {
-          full_name: formData.name,
+          full_name: formData.name || '-',
           phone: formData.phone,
           service: formData.service,
           message: formData.message,
-          email: formData.email,
+          email: formData.email || '-',
           status: 'draft',
           updated_at: new Date().toISOString(), // Ensure schema supports this or ignore
         };
@@ -117,12 +125,13 @@ export const ContactForm: React.FC = () => {
 
     try {
       // Final update with 'submitted' status
+      // Final update with 'submitted' status
       const payload = {
-        full_name: formData.name,
+        full_name: formData.name || 'Ziyaretçi',
         phone: formData.phone,
         service: formData.service,
         message: formData.message,
-        email: formData.email,
+        email: formData.email || 'noreply@woyable.com',
         status: 'submitted',
         created_at: new Date().toISOString(),
         // Tracking (Optional columns in DB)
@@ -234,30 +243,7 @@ export const ContactForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      {/* Name Field */}
-      <div className="space-y-1">
-        <input
-          id="name"
-          required
-          value={formData.name}
-          onChange={handleChange}
-          className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
-          placeholder="Ad Soyad"
-        />
-      </div>
 
-      {/* Email Field - Added */}
-      <div className="space-y-1">
-        <input
-          id="email"
-          type="email"
-          required
-          value={formData.email}
-          onChange={handleChange}
-          className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
-          placeholder="E-Posta Adresiniz"
-        />
-      </div>
 
       {/* Phone Field */}
       <div className="space-y-1">
@@ -278,7 +264,8 @@ export const ContactForm: React.FC = () => {
           id="service"
           value={formData.service}
           onChange={handleChange}
-          className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+          className={`flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all ${defaultService ? 'bg-slate-100 cursor-not-allowed' : ''}`}
+          disabled={!!defaultService}
         >
           <option value="">Hizmet Seçiniz...</option>
           <option value="web-design">Web Tasarım & Yazılım</option>
@@ -286,6 +273,8 @@ export const ContactForm: React.FC = () => {
           <option value="custom-dev">Özel Yazılım / CRM</option>
           <option value="ads">Google Ads & Pazarlama</option>
           <option value="social">Sosyal Medya Yönetimi</option>
+          <option value="branding">Kurumsal Kimlik & Tasarım</option>
+          <option value="printing">Baskı & Etkinlik</option>
           <option value="other">Diğer</option>
         </select>
       </div>
