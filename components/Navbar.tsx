@@ -29,7 +29,7 @@ export const Navbar = () => {
       label: 'Hizmetlerimiz',
       href: '#',
       dropdown: [
-        { label: 'Web Tasarım & Yazılım', href: '/hizmetlerimiz/web-tasarim-yazilim' },
+        { label: 'Web Tasarım & Yazılım', href: '/hizmetlerimiz/web-tasarim' },
         { label: 'Kurumsal Kimlik & Marka', href: '/hizmetlerimiz/kurumsal-kimlik-logo' },
         { label: 'Sosyal Medya & Reklam', href: '/hizmetlerimiz/sosyal-medya-reklam' },
         { label: 'Özel Yazılım Çözümleri', href: '/hizmetlerimiz/ozel-yazilim-cozumleri' },

@@ -62,6 +62,9 @@ export const Footer = () => {
 
         <div className="border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-slate-500">© 2024 Woyable. Tüm hakları saklıdır.</p>
+          <div className="flex gap-6">
+            <Link href="/gizlilik-politikasi" className="text-sm text-slate-500 hover:text-blue-600 transition-colors">Gizlilik Politikası</Link>
+          </div>
         </div>
       </div>
     </footer>

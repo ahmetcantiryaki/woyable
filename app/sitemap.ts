@@ -11,9 +11,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/iletisim',
         '/paketlerimiz',
         '/blog',
+        '/gizlilik-politikasi',
         // Hizmetlerimiz
         '/hizmetlerimiz',
-        '/hizmetlerimiz/web-tasarim-yazilim',
+        '/hizmetlerimiz/web-tasarim',
         '/hizmetlerimiz/sosyal-medya-reklam',
         '/hizmetlerimiz/kurumsal-kimlik-logo',
         '/hizmetlerimiz/ozel-yazilim-cozumleri',

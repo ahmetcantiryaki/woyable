@@ -14,7 +14,7 @@ export const Services = () => {
       title: "Web Tasarım & Yazılım",
       description: "İşinizi büyüten, SEO uyumlu, hızlı ve modern web siteleri.",
       features: ["Mobil Uyumlu Tasarım", "SEO Altyapısı", "Kolay Yönetim Paneli", "Google Harita Kaydı"],
-      href: "/hizmetlerimiz/web-tasarim-yazilim"
+      href: "/hizmetlerimiz/web-tasarim"
     },
     {
       icon: <PenTool className="h-8 w-8 text-blue-600" />,

@@ -31,7 +31,7 @@ export const PricingSection = () => {
             oldPrice: "15.000 ₺",
             description: "Kurumsal firmalar için SEO uyumlu site.",
             features: ["5+ Sayfa", "SEO Altyapısı", "Blog Modülü", "Yönetim Paneli"],
-            href: "/hizmetlerimiz/web-tasarim-yazilim",
+            href: "/hizmetlerimiz/web-tasarim",
             isPopular: true,
             badge: "En Popüler"
         },
