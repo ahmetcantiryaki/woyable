@@ -5,14 +5,16 @@ import { sendContactForm } from '../actions/contact';
 
 interface ContactFormProps {
   defaultService?: string;
+  defaultPackage?: string;
   variant?: 'full' | 'minimal';
 }
 
-export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '', variant = 'full' }) => {
+export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '', defaultPackage = 'Karar Vermedim', variant = 'full' }) => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     service: defaultService,
+    selectedPackage: 'Karar Vermedim',
     message: '',
     email: '',
     // Tracking
@@ -50,6 +52,13 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '', v
 
   }, []);
 
+  // Sync defaultPackage prop with state
+  useEffect(() => {
+    if (defaultPackage && defaultPackage !== 'Karar Vermedim') {
+      setFormData(prev => ({ ...prev, selectedPackage: defaultPackage }));
+    }
+  }, [defaultPackage]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
@@ -67,6 +76,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '', v
       data.append('email', formData.email);
       data.append('phone', formData.phone);
       data.append('service', formData.service);
+      data.append('selectedPackage', formData.selectedPackage);
       data.append('message', formData.message);
       data.append('variant', variant); // Inform backend about variant if needed logic there
 
@@ -89,6 +99,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '', v
           name: '',
           phone: '',
           service: '',
+          selectedPackage: 'Karar Vermedim',
           message: '',
           email: ''
         }));
@@ -191,6 +202,22 @@ export const ContactForm: React.FC<ContactFormProps> = ({ defaultService = '', v
           <option value="branding">Kurumsal Kimlik & Tasarım</option>
           <option value="printing">Baskı & Etkinlik</option>
           <option value="other">Diğer</option>
+        </select>
+      </div>
+
+      {/* Package Selection */}
+      <div className="space-y-1">
+        <label htmlFor="selectedPackage" className="text-sm font-medium text-slate-700">Paket Tercihi</label>
+        <select
+          id="selectedPackage"
+          value={formData.selectedPackage}
+          onChange={handleChange}
+          className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+        >
+          <option value="Karar Vermedim">Karar Vermedim</option>
+          <option value="Başlangıç (3.000 ₺)">Başlangıç (3.000 ₺)</option>
+          <option value="Profesyonel (7.500 ₺)">Profesyonel (7.500 ₺)</option>
+          <option value="Kurumsal (Teklif Al)">Kurumsal (Teklif Al)</option>
         </select>
       </div>
 

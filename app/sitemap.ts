@@ -7,21 +7,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Static routes
     const routes = [
         '',
-        '/hakkimizda',
+        '/kurumsal',
         '/iletisim',
+        '/paketlerimiz',
         '/blog',
-        '/hizmetlerimiz/web-tasarim',
+        // Hizmetlerimiz
+        '/hizmetlerimiz',
+        '/hizmetlerimiz/web-tasarim-yazilim',
+        '/hizmetlerimiz/sosyal-medya-reklam',
+        '/hizmetlerimiz/kurumsal-kimlik-logo',
+        '/hizmetlerimiz/ozel-yazilim-cozumleri',
         '/hizmetlerimiz/e-ticaret',
         '/hizmetlerimiz/sosyal-medya-yonetimi',
-        '/hizmetlerimiz/google-reklamlari',
         '/hizmetlerimiz/kurumsal-kimlik-tasarimi',
         '/hizmetlerimiz/baski-etkinlik',
         '/hizmetlerimiz/yazilim-cozumleri',
+        '/hizmetlerimiz/kurumsal-web-sitesi',
+        // Sektorler
+        '/sektorler/saglik-klinik-web-tasarim',
+        '/sektorler/avukat-hukuk-web-tasarim',
+        '/sektorler/teknik-servis-web-tasarim',
+        '/sektorler/e-ticaret-cozumleri',
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
-        priority: route === '' ? 1 : 0.8,
+        priority: route === '' ? 1 : route.includes('/sektorler/') ? 0.7 : 0.8,
     }));
 
     // Fetch dynamic blog posts

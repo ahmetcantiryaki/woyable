@@ -148,32 +148,29 @@ export default async function BlogPostPage({ params }: PageProps) {
                             dangerouslySetInnerHTML={{ __html: processedContent }}
                         />
 
-                        {/* CTA Section (Embedded at bottom of content) */}
-                        {post.related_service_key && (
-                            <div className="mt-16 relative overflow-hidden rounded-3xl group isolate">
-                                {/* Gradient Background */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-700 group-hover:scale-105 transition-transform duration-700" />
-                                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 grayscale" />
+                        {/* CTA Section (Always visible) */}
+                        <div className="mt-16 relative overflow-hidden rounded-3xl group isolate">
+                            {/* Gradient Background */}
+                            <div className="absolute inset-0 bg-slate-900 group-hover:bg-slate-800 transition-colors duration-300" />
 
-                                <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
-                                    <div className="max-w-xl">
-                                        <h3 className="text-2xl md:text-4xl font-bold text-white mb-4 tracking-tight">
-                                            İşinizi Büyütmeye Hazır mısınız?
-                                        </h3>
-                                        <p className="text-blue-100 text-lg leading-relaxed">
-                                            {post.custom_cta_text || 'Bu alandaki uzmanlığımızla projelerinizi hayata geçirelim. Hemen ücretsiz ön görüşme planlayın.'}
-                                        </p>
-                                    </div>
-                                    <div className="flex-shrink-0">
-                                        <Link href={`/iletisim?service=${post.related_service_key}`}>
-                                            <Button className="h-14 px-8 bg-white text-blue-900 hover:bg-blue-50 text-lg font-bold rounded-full shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all flex items-center gap-2 border border-white/50">
-                                                Teklif Alın <ArrowRight className="w-5 h-5 text-blue-600" />
-                                            </Button>
-                                        </Link>
-                                    </div>
+                            <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+                                <div className="max-w-xl">
+                                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
+                                        İşinizi Büyütmeye Hazır mısınız?
+                                    </h3>
+                                    <p className="text-slate-300 text-lg leading-relaxed">
+                                        Bu alandaki uzmanlığımızla projelerinizi hayata geçirelim. Hemen ücretsiz ön görüşme planlayın.
+                                    </p>
+                                </div>
+                                <div className="flex-shrink-0">
+                                    <Link href="/iletisim">
+                                        <Button className="h-14 px-8 bg-blue-600 text-white hover:bg-blue-700 text-lg font-bold rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center gap-2 border-none">
+                                            Teklif Alın <ArrowRight className="w-5 h-5" />
+                                        </Button>
+                                    </Link>
                                 </div>
                             </div>
-                        )}
+                        </div>
                     </div>
 
                 </div>

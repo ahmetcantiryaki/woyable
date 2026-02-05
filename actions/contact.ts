@@ -10,6 +10,7 @@ type ContactFormData = {
   phone?: string;
   subject?: string;
   service?: string;
+  selectedPackage?: string;
   message: string;
 };
 
@@ -26,6 +27,7 @@ export async function sendContactForm(prevState: any, formData: FormData): Promi
     phone: formData.get('phone') as string,
     subject: formData.get('subject') as string,
     service: formData.get('service') as string,
+    selectedPackage: formData.get('selectedPackage') as string || 'Karar Vermedim',
     message: formData.get('message') as string,
   };
 
@@ -51,6 +53,7 @@ export async function sendContactForm(prevState: any, formData: FormData): Promi
         phone: rawData.phone,
         subject: rawData.subject,
         service: rawData.service,
+        selected_package: rawData.selectedPackage,
         message: rawData.message,
         status: 'new'
       });
@@ -83,6 +86,7 @@ export async function sendContactForm(prevState: any, formData: FormData): Promi
           E-Posta: ${rawData.email}
           Telefon: ${rawData.phone || '-'}
           Hizmet: ${rawData.service || '-'}
+          Paket: ${rawData.selectedPackage || '-'}
           Konu: ${rawData.subject || '-'}
           
           Mesaj:
@@ -108,6 +112,10 @@ export async function sendContactForm(prevState: any, formData: FormData): Promi
               <td style="padding: 10px; border: 1px solid #e2e8f0;">${rawData.service || '-'}</td>
             </tr>
             <tr style="background-color: #f8fafc;">
+              <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold;">Paket Tercihi</td>
+              <td style="padding: 10px; border: 1px solid #e2e8f0;">${rawData.selectedPackage || '-'}</td>
+            </tr>
+            <tr>
               <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold;">Konu</td>
               <td style="padding: 10px; border: 1px solid #e2e8f0;">${rawData.subject || '-'}</td>
             </tr>

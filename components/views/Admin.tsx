@@ -15,6 +15,7 @@ interface Submission {
     email: string;
     phone: string;
     service: string;
+    selected_package?: string;
     message: string;
     status: SubmissionStatus;
     subject?: string;
@@ -274,7 +275,7 @@ export const Admin: React.FC = () => {
                                             <tr>
                                                 <th className="p-4 font-semibold text-slate-600">Tarih</th>
                                                 <th className="p-4 font-semibold text-slate-600">Kişi Bilgileri</th>
-                                                <th className="p-4 font-semibold text-slate-600">Hizmet / Mesaj</th>
+                                                <th className="p-4 font-semibold text-slate-600">Hizmet / Paket</th>
                                                 <th className="p-4 font-semibold text-slate-600">Durum</th>
                                                 <th className="p-4 font-semibold text-slate-600">İşlemler</th>
                                             </tr>
@@ -306,10 +307,15 @@ export const Admin: React.FC = () => {
                                                         )}
                                                     </td>
                                                     <td className="p-4 align-top max-w-xs">
-                                                        <div className="inline-block px-2 py-1 rounded bg-blue-50 text-blue-700 text-xs font-semibold mb-2">
+                                                        <div className="inline-block px-2 py-1 rounded bg-blue-50 text-blue-700 text-xs font-semibold mb-1">
                                                             {sub.service || 'Seçilmedi'}
                                                         </div>
-                                                        <p className="text-sm text-slate-600 line-clamp-3">{sub.message || '-'}</p>
+                                                        {sub.selected_package && sub.selected_package !== 'Karar Vermedim' && (
+                                                            <div className="inline-block ml-1 px-2 py-1 rounded bg-purple-50 text-purple-700 text-xs font-semibold mb-1">
+                                                                {sub.selected_package}
+                                                            </div>
+                                                        )}
+                                                        <p className="text-sm text-slate-600 line-clamp-2 mt-1">{sub.message || '-'}</p>
                                                     </td>
                                                     <td className="p-4 align-top">
                                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
