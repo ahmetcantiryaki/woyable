@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
+import { WhatsAppButton } from '../../components/ui/WhatsAppButton';
 
 export default function SiteLayout({
     children,
@@ -15,6 +16,7 @@ export default function SiteLayout({
                 {children}
             </main>
             <Footer />
+            <WhatsAppButton />
         </div>
     );
 }

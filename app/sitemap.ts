@@ -19,10 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/hizmetlerimiz/kurumsal-kimlik-logo',
         '/hizmetlerimiz/ozel-yazilim-cozumleri',
         '/hizmetlerimiz/e-ticaret',
-        '/hizmetlerimiz/sosyal-medya-yonetimi',
-        '/hizmetlerimiz/kurumsal-kimlik-tasarimi',
         '/hizmetlerimiz/baski-etkinlik',
-        '/hizmetlerimiz/yazilim-cozumleri',
         '/hizmetlerimiz/kurumsal-web-sitesi',
         // Sektorler
         '/sektorler/saglik-klinik-web-tasarim',

@@ -1,70 +1,53 @@
 import React from 'react';
 import Link from 'next/link';
-import { Code2, Mail, MapPin, Instagram, Linkedin, Twitter } from 'lucide-react';
+import { Code2, Mail, Phone } from 'lucide-react';
 
 export const Footer = () => {
   return (
-    <footer className="bg-slate-50 border-t border-slate-200 pt-16 pb-8">
+    <footer className="bg-white border-t border-slate-100 py-12">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          {/* Brand */}
-          <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2 inline-flex">
-              <div className="bg-blue-600 p-1.5 rounded-lg">
-                <Code2 className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-slate-900">Woyable</span>
-            </Link>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              Dijital dünyada markanızı öne çıkaran, kullanıcı odaklı ve yüksek performanslı çözümler üretiyoruz. Teknoloji ve tasarımı birleştiriyoruz.
-            </p>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12">
+          {/* Logo & Slogan */}
+          <div className="flex items-center gap-2">
+            <div className="bg-blue-600 p-1.5 rounded-lg">
+              <Code2 className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-xl font-bold text-slate-900">Woyable</span>
           </div>
 
-          {/* Links */}
-          <div>
-            <h4 className="font-semibold text-slate-900 mb-4">Hızlı Erişim</h4>
-            <ul className="space-y-2 text-sm text-slate-600">
-              <li><Link href="/" className="hover:text-blue-600 transition-colors">Anasayfa</Link></li>
-              <li><Link href="/kurumsal" className="hover:text-blue-600 transition-colors">Hakkımızda</Link></li>
-              <li><Link href="/hizmetlerimiz" className="hover:text-blue-600 transition-colors">Hizmetlerimiz</Link></li>
-              <li><Link href="/blog" className="hover:text-blue-600 transition-colors">Blog</Link></li>
-              <li><Link href="/iletisim" className="hover:text-blue-600 transition-colors">İletişim</Link></li>
-            </ul>
+          {/* Minimal Links */}
+          <div className="flex flex-wrap justify-center gap-6 text-sm font-medium text-slate-600">
+            <Link href="/hizmetlerimiz" className="hover:text-blue-600 transition-colors">Hizmetler</Link>
+            <Link href="/kurumsal" className="hover:text-blue-600 transition-colors">Kurumsal</Link>
+            <Link href="/blog" className="hover:text-blue-600 transition-colors">Blog</Link>
+            <Link href="/iletisim" className="hover:text-blue-600 transition-colors">İletişim</Link>
           </div>
 
-          {/* Services */}
-          <div>
-            <h4 className="font-semibold text-slate-900 mb-4">Hizmetlerimiz</h4>
-            <ul className="space-y-2 text-sm text-slate-600">
-              <li><Link href="/hizmetlerimiz/web-tasarim" className="hover:text-blue-600 transition-colors">Web Tasarım & Yazılım</Link></li>
-              <li><Link href="/hizmetlerimiz/ozel-yazilim-cozumleri" className="hover:text-blue-600 transition-colors">Özel Yazılım Çözümleri</Link></li>
-              <li><Link href="/hizmetlerimiz/sosyal-medya-yonetimi" className="hover:text-blue-600 transition-colors">Sosyal Medya Yönetimi</Link></li>
-              <li><Link href="/hizmetlerimiz/e-ticaret-ve-pazaryeri-yonetimi" className="hover:text-blue-600 transition-colors">E-Ticaret Yönetimi</Link></li>
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="font-semibold text-slate-900 mb-4">İletişim</h4>
-            <ul className="space-y-4 text-sm text-slate-600">
-              <li className="flex items-start gap-3">
-                <Mail className="h-5 w-5 text-blue-600 shrink-0" />
-                <span>info@woyable.com</span>
-              </li>
-
-              <li className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-blue-600 shrink-0" />
-                <span>İstanbul, Türkiye</span>
-              </li>
-            </ul>
+          {/* Contact Actions */}
+          <div className="flex items-center gap-4">
+            <a
+              href="mailto:info@woyable.com"
+              className="p-2 rounded-full bg-slate-50 text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+              aria-label="Email"
+            >
+              <Mail className="w-5 h-5" />
+            </a>
+            <a
+              href="https://wa.me/905339401855"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#25D366] text-white hover:bg-[#20b858] transition-colors text-sm font-bold shadow-sm hover:shadow-md"
+            >
+              <Phone className="w-4 h-4" />
+              WhatsApp Hattı
+            </a>
           </div>
         </div>
 
-        <div className="border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-slate-500">© 2024 Woyable. Tüm hakları saklıdır.</p>
-          <div className="flex gap-6">
-            <Link href="/gizlilik-politikasi" className="text-sm text-slate-500 hover:text-blue-600 transition-colors">Gizlilik Politikası</Link>
-          </div>
+        <div className="mt-12 text-center">
+          <p className="text-xs text-slate-400">
+            © {new Date().getFullYear()} Woyable Dijital Ajans. <Link href="/gizlilik-politikas" className="hover:text-slate-600 underline">Gizlilik Politikası</Link>
+          </p>
         </div>
       </div>
     </footer>

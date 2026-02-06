@@ -1,7 +1,11 @@
-'use client';
-
 import React from 'react';
+import { Metadata } from 'next';
 import { Shield, Lock } from 'lucide-react';
+
+export const metadata: Metadata = {
+    title: 'Gizlilik Politikası | Woyable',
+    description: 'Woyable Dijital Ajans gizlilik politikası. Kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında bilgi edinin.',
+};
 
 export default function PrivacyPolicyPage() {
     return (

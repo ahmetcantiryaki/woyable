@@ -11,6 +11,8 @@ export const metadata = {
 };
 
 import Script from 'next/script';
+import { OfferModalProvider } from '../components/context/OfferModalContext';
+import { OfferModal } from '../components/ui/OfferModal';
 
 export default function RootLayout({
     children,
@@ -88,7 +90,10 @@ export default function RootLayout({
                     `}
                 </Script>
 
-                {children}
+                <OfferModalProvider>
+                    {children}
+                    <OfferModal />
+                </OfferModalProvider>
             </body>
         </html>
     );
