@@ -315,12 +315,15 @@ export function GetOfferContent() {
                             </div>
                         </div>
 
-                        <Button
+                        <button
                             type="submit"
                             disabled={isSubmitting}
                             className={`
-                                w-full h-11 lg:h-12 rounded-xl font-bold text-sm lg:text-base flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-blue-500/25
-                                ${isSubmitting ? 'bg-slate-100 text-slate-400' : 'bg-blue-600 text-white hover:bg-blue-700 hover:-translate-y-0.5'}
+                                w-full h-11 lg:h-12 rounded-xl font-bold text-sm lg:text-base flex items-center justify-center gap-2 transition-all duration-300
+                                ${isSubmitting 
+                                    ? 'bg-slate-300 text-slate-500 cursor-not-allowed shadow-none' 
+                                    : 'bg-blue-600 text-white hover:bg-blue-700 hover:-translate-y-0.5 shadow-lg hover:shadow-blue-500/25'
+                                }
                             `}
                         >
                             {isSubmitting ? (
@@ -334,7 +337,7 @@ export function GetOfferContent() {
                                     <ArrowRight className="w-4 h-4" />
                                 </>
                             )}
-                        </Button>
+                        </button>
                     </form>
 
                     <div className="mt-4 pt-4 border-t border-slate-100">
