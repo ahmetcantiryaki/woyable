@@ -4,11 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import { Loader2, Search, Calendar, Clock, Mail, Phone, Trash2, LayoutDashboard, FileText } from 'lucide-react';
+import { Loader2, Search, Calendar, Clock, Mail, Phone, Trash2, LayoutDashboard, FileText, Megaphone, MessageSquare } from 'lucide-react';
 import { AdminBlog } from './AdminBlog';
 
 // Status types
 type SubmissionStatus = 'new' | 'read' | 'contacted' | 'archived';
+
+// Kaynak bilgisi: hangi tablodan geldiğini tutar
+type SubmissionSource = 'contact_messages' | 'ad_leads';
 
 interface Submission {
     id: string;
@@ -21,6 +24,15 @@ interface Submission {
     message: string;
     status: SubmissionStatus;
     subject?: string;
+    // ad_leads'e özgü alanlar
+    service_category?: string;
+    source?: string;
+    utm_source?: string;
+    utm_medium?: string;
+    utm_campaign?: string;
+    gclid?: string;
+    // Hangi tablodan geldiği
+    _table: SubmissionSource;
 }
 
 export const Admin: React.FC = () => {
@@ -34,6 +46,7 @@ export const Admin: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [filterStatus, setFilterStatus] = useState<string>('all');
     const [filterService, setFilterService] = useState<string>('all');
+    const [filterSource, setFilterSource] = useState<string>('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState<'submissions' | 'blog'>('submissions');
 
@@ -91,27 +104,60 @@ export const Admin: React.FC = () => {
 
     const fetchSubmissions = async () => {
         setLoading(true);
-        const { data, error } = await supabase
-            .from('contact_messages')
-            .select('*')
-            .order('created_at', { ascending: false });
 
-        if (error) {
-            console.error('Error fetching submissions:', error);
-        } else {
-            setSubmissions(data as Submission[]);
+        // Her iki tablodan da veri çek
+        const [contactResult, adLeadsResult] = await Promise.all([
+            supabase
+                .from('contact_messages')
+                .select('*')
+                .order('created_at', { ascending: false }),
+            supabase
+                .from('ad_leads')
+                .select('*')
+                .order('created_at', { ascending: false }),
+        ]);
+
+        const contactData: Submission[] = (contactResult.data || []).map((item: any) => ({
+            ...item,
+            _table: 'contact_messages' as SubmissionSource,
+        }));
+
+        const adLeadsData: Submission[] = (adLeadsResult.data || []).map((item: any) => ({
+            ...item,
+            service: item.service_category || item.service || '',
+            _table: 'ad_leads' as SubmissionSource,
+        }));
+
+        if (contactResult.error) {
+            console.error('Error fetching contact_messages:', contactResult.error);
         }
+        if (adLeadsResult.error) {
+            console.error('Error fetching ad_leads:', adLeadsResult.error);
+        }
+
+        // Birleştir ve tarihe göre sırala
+        const allSubmissions = [...contactData, ...adLeadsData].sort(
+            (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+
+        setSubmissions(allSubmissions);
         setLoading(false);
     };
 
     const updateStatus = async (id: string, newStatus: SubmissionStatus) => {
+        // Hangi tablodan geldiğini bul
+        const submission = submissions.find(sub => sub.id === id);
+        if (!submission) return;
+
+        const tableName = submission._table;
+
         // Optimistic update
         setSubmissions(prev => prev.map(sub =>
             sub.id === id ? { ...sub, status: newStatus } : sub
         ));
 
         const { error } = await supabase
-            .from('contact_messages')
+            .from(tableName)
             .update({ status: newStatus })
             .eq('id', id);
 
@@ -129,18 +175,25 @@ export const Admin: React.FC = () => {
 
         const matchesStatus = filterStatus === 'all' || sub.status === filterStatus;
         const matchesService = filterService === 'all' || sub.service === filterService;
+        const matchesSource = filterSource === 'all' || sub._table === filterSource;
 
-        return matchesSearch && matchesStatus && matchesService;
+        return matchesSearch && matchesStatus && matchesService && matchesSource;
     });
 
     const deleteSubmission = async (id: string) => {
         if (!window.confirm('Bu kaydı silmek istediğinize emin misiniz?')) return;
 
+        // Hangi tablodan geldiğini bul
+        const submission = submissions.find(sub => sub.id === id);
+        if (!submission) return;
+
+        const tableName = submission._table;
+
         // Optimistic update
         setSubmissions(prev => prev.filter(sub => sub.id !== id));
 
         const { error } = await supabase
-            .from('contact_messages')
+            .from(tableName)
             .delete()
             .eq('id', id);
 
@@ -226,6 +279,29 @@ export const Admin: React.FC = () => {
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+                                {/* Source Filter */}
+                                <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
+                                    <span className="text-sm font-medium text-slate-500 whitespace-nowrap">Kaynak:</span>
+                                    <div className="flex gap-1">
+                                        {[
+                                            { value: 'all', label: 'Tümü' },
+                                            { value: 'contact_messages', label: 'İletişim' },
+                                            { value: 'ad_leads', label: 'Reklam Lead' },
+                                        ].map(src => (
+                                            <button
+                                                key={src.value}
+                                                onClick={() => setFilterSource(src.value)}
+                                                className={`px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${filterSource === src.value
+                                                    ? 'bg-purple-600 text-white'
+                                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                                    }`}
+                                            >
+                                                {src.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 {/* Service Filter */}
                                 <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0">
                                     <span className="text-sm font-medium text-slate-500 whitespace-nowrap">Hizmet:</span>
@@ -276,6 +352,7 @@ export const Admin: React.FC = () => {
                                         <thead className="bg-slate-50 border-b">
                                             <tr>
                                                 <th className="p-4 font-semibold text-slate-600">Tarih</th>
+                                                <th className="p-4 font-semibold text-slate-600">Kaynak</th>
                                                 <th className="p-4 font-semibold text-slate-600">Kişi Bilgileri</th>
                                                 <th className="p-4 font-semibold text-slate-600">Hizmet / Paket</th>
                                                 <th className="p-4 font-semibold text-slate-600">Durum</th>
@@ -284,7 +361,7 @@ export const Admin: React.FC = () => {
                                         </thead>
                                         <tbody className="divide-y">
                                             {filteredSubmissions.map(sub => (
-                                                <tr key={sub.id} className="hover:bg-slate-50 transition-colors">
+                                                <tr key={`${sub._table}-${sub.id}`} className="hover:bg-slate-50 transition-colors">
                                                     <td className="p-4 align-top whitespace-nowrap">
                                                         <div className="flex items-center gap-2 text-slate-500 text-sm">
                                                             <Calendar className="h-4 w-4" />
@@ -294,6 +371,22 @@ export const Admin: React.FC = () => {
                                                             <Clock className="h-3 w-3" />
                                                             {new Date(sub.created_at).toLocaleTimeString()}
                                                         </div>
+                                                    </td>
+                                                    <td className="p-4 align-top">
+                                                        {sub._table === 'ad_leads' ? (
+                                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold">
+                                                                <Megaphone className="h-3 w-3" /> Reklam Lead
+                                                            </span>
+                                                        ) : (
+                                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-semibold">
+                                                                <MessageSquare className="h-3 w-3" /> İletişim
+                                                            </span>
+                                                        )}
+                                                        {sub.utm_source && (
+                                                            <div className="text-[10px] text-slate-400 mt-1">
+                                                                {sub.utm_source}{sub.utm_campaign ? ` / ${sub.utm_campaign}` : ''}
+                                                            </div>
+                                                        )}
                                                     </td>
                                                     <td className="p-4 align-top">
                                                         <div className="font-medium text-slate-900">{sub.name || '-'}</div>
@@ -357,7 +450,7 @@ export const Admin: React.FC = () => {
                                             ))}
                                             {filteredSubmissions.length === 0 && (
                                                 <tr>
-                                                    <td colSpan={5} className="p-8 text-center text-slate-500">
+                                                    <td colSpan={6} className="p-8 text-center text-slate-500">
                                                         Kayıt bulunamadı.
                                                     </td>
                                                 </tr>
