@@ -49,7 +49,7 @@ interface CategoryPackages {
     packages: PackageItem[];
 }
 
-export function GetOfferContent() {
+export function PackageComparisonContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [selectedPackage, setSelectedPackage] = useState<string | null>(null);

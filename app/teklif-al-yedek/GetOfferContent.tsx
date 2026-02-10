@@ -12,11 +12,17 @@ import {
     ArrowRight,
     Loader2,
     Phone,
+    MonitorSmartphone,
     Briefcase,
     Home,
     CheckCircle2,
     Layers,
-    Palette
+    Palette,
+    Stamp,
+    FileImage,
+    CreditCard,
+    PenTool,
+    Building2
 } from 'lucide-react';
 import { sendAdLeadForm } from '@/actions/contact';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -34,6 +40,7 @@ interface CategoryItem {
     id: string;
     label: string;
     icon: React.ElementType;
+    badgeColor: string;
 }
 
 interface PackageItem {
@@ -41,19 +48,15 @@ interface PackageItem {
     price: string;
     oldPrice: string;
     desc: string;
-    isPopular?: boolean;
-}
-
-interface CategoryPackages {
-    categoryId: string;
-    packages: PackageItem[];
+    badge: string;
+    badgeColor: string;
+    category: string;
 }
 
 export function GetOfferContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
-    const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -82,80 +85,74 @@ export function GetOfferContent() {
         message: ''
     });
 
-    // Kategoriler
+    // Kategoriler - Yeni sıralama: Tasarım → Sosyal Medya → Web → Sektörel → Özel Yazılım → E-Ticaret
     const categories: CategoryItem[] = [
-        { id: 'design', label: 'Tasarım Hizmetleri', icon: Palette },
-        { id: 'social', label: 'Sosyal Medya Yönetimi', icon: Megaphone },
-        { id: 'web', label: 'Web Sitesi Paketleri', icon: Globe },
-        { id: 'sectoral', label: 'Sektörel Çözümler', icon: Briefcase },
-        { id: 'software', label: 'Özel Yazılım', icon: Cpu },
-        { id: 'ecommerce', label: 'E-Ticaret Paketleri', icon: ShoppingBag },
+        { id: 'design', label: 'Tasarım Hizmetleri', icon: Palette, badgeColor: '' },
+        { id: 'social', label: 'Sosyal Medya Yönetimi', icon: Megaphone, badgeColor: '' },
+        { id: 'web', label: 'Web Sitesi Paketleri', icon: Globe, badgeColor: '' },
+        { id: 'sectoral', label: 'Sektörel Çözümler', icon: Briefcase, badgeColor: '' },
+        { id: 'software', label: 'Özel Yazılım', icon: Cpu, badgeColor: '' },
+        { id: 'ecommerce', label: 'E-Ticaret Paketleri', icon: ShoppingBag, badgeColor: '' },
     ];
 
-    // Tüm kategoriler için paketler
-    const allCategoryPackages: CategoryPackages[] = [
-        {
-            categoryId: 'design',
-            packages: [
-                { name: 'Başlangıç', price: '3.000 ₺', oldPrice: '6.000 ₺', desc: 'Logo + Kartvizit' },
-                { name: 'Profesyonel', price: '5.500 ₺', oldPrice: '11.000 ₺', desc: 'Logo + Kartvizit + Antetli + Zarf', isPopular: true },
-                { name: 'Kurumsal', price: '9.000 ₺', oldPrice: '18.000 ₺', desc: 'Full kurumsal kimlik + Marka kılavuzu' },
-            ]
-        },
-        {
-            categoryId: 'social',
-            packages: [
-                { name: 'Başlangıç', price: '3.000 ₺', oldPrice: '6.000 ₺', desc: 'Aylık 12 paylaşım' },
-                { name: 'Profesyonel', price: '6.000 ₺', oldPrice: '12.000 ₺', desc: 'Aylık 20 paylaşım + Hikaye', isPopular: true },
-                { name: 'Full Paket', price: '12.000 ₺', oldPrice: '24.000 ₺', desc: 'Reklam yönetimi dahil' },
-            ]
-        },
-        {
-            categoryId: 'web',
-            packages: [
-                { name: 'Başlangıç', price: '3.000 ₺', oldPrice: '7.000 ₺', desc: '1-3 sayfa, mobil uyumlu' },
-                { name: 'Profesyonel', price: '6.000 ₺', oldPrice: '12.000 ₺', desc: '5-7 sayfa + Blog + Admin paneli', isPopular: true },
-                { name: 'Kurumsal', price: '10.000 ₺', oldPrice: '20.000 ₺', desc: '10+ sayfa + Çoklu dil + 2 yıl hosting' },
-            ]
-        },
-        {
-            categoryId: 'sectoral',
-            packages: [
-                { name: 'Başlangıç', price: '3.000 ₺', oldPrice: '7.000 ₺', desc: 'Sektörel tasarım + 3 sayfa' },
-                { name: 'Profesyonel', price: '5.500 ₺', oldPrice: '11.000 ₺', desc: 'Randevu sistemi + 6 sayfa', isPopular: true },
-                { name: 'Kurumsal', price: '9.000 ₺', oldPrice: '18.000 ₺', desc: 'Online ödeme + Sınırsız sayfa' },
-            ]
-        },
-        {
-            categoryId: 'software',
-            packages: [
-                { name: 'Başlangıç', price: '15.000 ₺', oldPrice: '30.000 ₺', desc: '3-5 modül + 3 ay destek' },
-                { name: 'Profesyonel', price: '35.000 ₺', oldPrice: '70.000 ₺', desc: '8-12 modül + API + 6 ay destek', isPopular: true },
-                { name: 'Kurumsal', price: '75.000 ₺', oldPrice: '150.000 ₺', desc: 'Sınırsız modül + Mobil uygulama + 1 yıl destek' },
-            ]
-        },
-        {
-            categoryId: 'ecommerce',
-            packages: [
-                { name: 'Başlangıç', price: '12.000 ₺', oldPrice: '24.000 ₺', desc: '100 ürün + Ödeme entegrasyonu' },
-                { name: 'Profesyonel', price: '25.000 ₺', oldPrice: '50.000 ₺', desc: '500 ürün + Pazaryeri + 6 ay destek', isPopular: true },
-                { name: 'Kurumsal', price: '50.000 ₺', oldPrice: '100.000 ₺', desc: 'Sınırsız ürün + Mobil uygulama + 1 yıl destek' },
-            ]
-        },
+    // Tüm paketler tek bir dizide, kategori bilgisiyle birlikte
+    const allPackages: PackageItem[] = [
+        // Tasarım Hizmetleri - En ucuzdan pahalıya
+        { category: 'design', name: "Kartvizit Tasarımı", price: "499 ₺", oldPrice: "1.200 ₺", desc: "Şık ve akılda kalıcı.", badge: "", badgeColor: "" },
+        { category: 'design', name: "Logo Tasarımı", price: "1.299 ₺", oldPrice: "3.500 ₺", desc: "Profesyonel ve özgün.", badge: "", badgeColor: "" },
+        { category: 'design', name: "Sosyal Medya Kiti", price: "1.999 ₺", oldPrice: "4.500 ₺", desc: "Profil + Kapak + Post.", badge: "", badgeColor: "" },
+        { category: 'design', name: "Kurumsal Kimlik Paketi", price: "3.999 ₺", oldPrice: "9.000 ₺", desc: "Logo + Kartvizit + Antetli.", badge: "", badgeColor: "" },
+
+        // Sosyal Medya - 3 paket
+        { category: 'social', name: "Başlangıç Paketi", price: "3.500 ₺", oldPrice: "7.000 ₺", desc: "Aylık 12 paylaşım.", badge: "", badgeColor: "" },
+        { category: 'social', name: "Profesyonel Yönetim", price: "6.500 ₺", oldPrice: "12.500 ₺", desc: "Aylık 20 paylaşım + hikaye.", badge: "", badgeColor: "" },
+        { category: 'social', name: "Tam Kapsamlı Dijital", price: "15.000 ₺", oldPrice: "30.000 ₺", desc: "Reklam + yönetim.", badge: "", badgeColor: "" },
+
+        // Web Tasarım Paketleri - 3 paket
+        { category: 'web', name: "Başlangıç Web Sitesi", price: "2.999 ₺", oldPrice: "6.500 ₺", desc: "Tek sayfa, hızlı teslim.", badge: "", badgeColor: "" },
+        { category: 'web', name: "Sektörel Web Sitesi", price: "4.999 ₺", oldPrice: "9.999 ₺", desc: "Sektörünüze özel tasarım.", badge: "", badgeColor: "" },
+        { category: 'web', name: "Kurumsal Web Sitesi", price: "7.999 ₺", oldPrice: "15.000 ₺", desc: "Tam kapsamlı çözüm.", badge: "", badgeColor: "" },
+        
+        // Sektörel Çözümler
+        { category: 'sectoral', name: "Klinik & Sağlık", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Randevu odaklı.", badge: "", badgeColor: "" },
+        { category: 'sectoral', name: "Hukuk & Avukat", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Kurumsal ve prestijli.", badge: "", badgeColor: "" },
+        { category: 'sectoral', name: "E-Ticaret Katalog", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Ürün kataloğu.", badge: "", badgeColor: "" },
+        { category: 'sectoral', name: "İnşaat & Mimarlık", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Proje galerisi.", badge: "", badgeColor: "" },
+        { category: 'sectoral', name: "Oto Galeri", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Araç portföyü.", badge: "", badgeColor: "" },
+        { category: 'sectoral', name: "Turizm & Hotel", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Rezervasyon.", badge: "", badgeColor: "" },
+        { category: 'sectoral', name: "Eğitim & Kurs", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Ders programı.", badge: "", badgeColor: "" },
+        { category: 'sectoral', name: "Restoran & Cafe", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "QR Menü.", badge: "", badgeColor: "" },
+        
+        // Özel Yazılım
+        { category: 'software', name: "Özel Yazılım Projesi", price: "Teklif Al", oldPrice: "", desc: "Size özel butik çözümler.", badge: "", badgeColor: "" },
+        
+        // E-Ticaret - 3 paket
+        { category: 'ecommerce', name: "E-Ticaret Başlangıç", price: "9.999 ₺", oldPrice: "20.000 ₺", desc: "Hızlı başlangıç.", badge: "", badgeColor: "" },
+        { category: 'ecommerce', name: "E-Ticaret Standart", price: "19.999 ₺", oldPrice: "35.000 ₺", desc: "Tam donanımlı mağaza.", badge: "", badgeColor: "" },
+        { category: 'ecommerce', name: "E-Ticaret Pro", price: "39.999 ₺", oldPrice: "75.000 ₺", desc: "Kurumsal altyapı.", badge: "", badgeColor: "" },
     ];
+
+    // Kategoriye göre paketleri grupla
+    const getPackagesByCategory = (categoryId: string) => {
+        return allPackages.filter(pkg => pkg.category === categoryId);
+    };
+
+    // Seçilen paketin detaylarını al
+    const getSelectedPackageDetails = () => {
+        return allPackages.find(pkg => pkg.name === selectedPackage);
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handlePackageSelect = (categoryLabel: string, pkgName: string, price: string) => {
-        const fullName = `${categoryLabel} - ${pkgName}`;
-        setSelectedPackage(fullName);
-        setSelectedPrice(price);
+    const handlePackageSelect = (pkgName: string) => {
+        setSelectedPackage(pkgName);
+        // Not alanını otomatik doldur
         setFormData(prev => ({
             ...prev,
-            message: `${fullName} (${price}) hakkında bilgi almak istiyorum.`
+            message: `${pkgName} hakkında bilgi almak istiyorum.`
         }));
         const formElement = document.getElementById('offer-form');
         if (formElement) {
@@ -250,8 +247,10 @@ export function GetOfferContent() {
                 </div>
             </header>
 
-            {/* RIGHT COLUMN (Form) */}
-            <div className="w-full lg:w-[520px] xl:w-[600px] bg-gradient-to-b from-slate-50 to-white flex flex-col border-l border-slate-200 shadow-2xl shadow-slate-300/30 z-30 lg:h-screen lg:sticky lg:top-0 order-1 lg:order-2 lg:overflow-y-auto mt-12 lg:mt-0 flex-shrink-0">
+            {/* Mobile First Layout Order: Form First (Order-1), Content Second (Order-2) */}
+
+            {/* RIGHT COLUMN (Form) - Genişletildi 720px */}
+            <div className="w-full lg:w-[520px] xl:w-[720px] bg-gradient-to-b from-slate-50 to-white flex flex-col border-l border-slate-200 shadow-2xl shadow-slate-300/30 z-30 lg:h-screen lg:sticky lg:top-0 order-1 lg:order-2 lg:overflow-y-auto mt-12 lg:mt-0 flex-shrink-0">
                 <div id="offer-form" className="p-5 md:p-8 lg:p-10 w-full max-w-lg mx-auto">
 
                     {/* Başlık */}
@@ -281,19 +280,25 @@ export function GetOfferContent() {
                     </div>
 
                     {/* Seçilen Paket Bilgisi */}
-                    {selectedPackage && selectedPrice && (
-                        <div className="mb-5 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                            <div className="flex items-center justify-between gap-3">
-                                <div>
-                                    <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-0.5">İlgilendiğiniz Paket</div>
-                                    <div className="text-base lg:text-lg font-bold text-slate-900">{selectedPackage}</div>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-lg lg:text-xl font-bold text-blue-600">{selectedPrice}</div>
+                    {selectedPackage && (() => {
+                        const pkg = getSelectedPackageDetails();
+                        return pkg ? (
+                            <div className="mb-5 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                                <div className="flex items-center justify-between gap-3">
+                                    <div>
+                                        <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-0.5">İlgilendiğiniz Paket</div>
+                                        <div className="text-base lg:text-lg font-bold text-slate-900">{pkg.name}</div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-lg lg:text-xl font-bold text-blue-600">{pkg.price}</div>
+                                        {pkg.oldPrice && (
+                                            <div className="text-sm text-red-500 line-through">{pkg.oldPrice}</div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        ) : null;
+                    })()}
 
                     {/* Form */}
                     <form onSubmit={handleSubmit} className="space-y-3">
@@ -402,7 +407,7 @@ export function GetOfferContent() {
                 </div>
             </div>
 
-            {/* LEFT COLUMN (Content & Packages) */}
+            {/* LEFT COLUMN (Content & Packages) - Second on Mobile */}
             <div className="w-full lg:flex-1 p-3 lg:p-6 xl:p-8 flex flex-col relative order-2 lg:order-1 lg:h-screen lg:overflow-y-auto lg:pt-6 pb-16 bg-slate-50">
                 {/* Desktop Header Links */}
                 <div className="hidden lg:flex gap-3 mb-4 pl-2">
@@ -414,119 +419,63 @@ export function GetOfferContent() {
                     </button>
                 </div>
 
-                <div className="max-w-5xl mx-auto w-full space-y-6 pb-8">
-                    <div className="space-y-2 px-1 lg:px-0 text-center lg:text-left">
+                <div className="max-w-6xl mx-auto w-full space-y-5 lg:space-y-6 pb-8">
+                    <div className="space-y-1 lg:space-y-2 px-1 lg:px-0 text-center lg:text-left">
                         <h1 className="text-xl lg:text-3xl font-black text-slate-900 leading-[1.2] tracking-tight">
-                            Paketlerimizi{' '}
-                            <span className="text-blue-700">İnceleyin</span>
+                            İlgilendiğiniz Paketi{' '}
+                            <span className="text-blue-700">Seçin</span>
                         </h1>
                         <p className="text-xs lg:text-sm text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                            <span className="text-red-600 font-semibold">Kampanya sınırlı sayıda!</span> Bugün başvurun, projeniz <span className="font-semibold text-slate-800">7 gün içinde</span> teslim edilsin.
+                            Size en uygun paketi seçin, formda otomatik olarak işaretlensin.
                         </p>
-                    </div>
-                    
-                    {/* Floating Promo Banner */}
-                    <div className="bg-gradient-to-r from-red-600 to-rose-500 text-white rounded-xl p-4 shadow-lg shadow-red-500/20 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                        <div className="absolute bottom-0 left-0 w-20 h-20 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
-                        <div className="relative flex items-center justify-between gap-4 flex-wrap">
-                            <div className="flex items-center gap-3">
-                                <div className="relative">
-                                    <span className="flex h-3 w-3">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-                                    </span>
-                                </div>
-                                <div>
-                                    <div className="text-lg lg:text-xl font-bold">Şubat Ayına Özel %50 İndirim</div>
-                                    <div className="text-xs lg:text-sm text-white/80">Kampanya bitimine son 3 gün kaldı!</div>
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <div className="text-2xl lg:text-3xl font-black">3 GÜN</div>
-                                <div className="text-xs text-white/80">kaldı</div>
-                            </div>
-                        </div>
                     </div>
 
                     {/* TÜM KATEGORİLER VE PAKETLER */}
                     {categories.map((category) => {
-                        const catPkgs = allCategoryPackages.find(cp => cp.categoryId === category.id);
-                        if (!catPkgs) return null;
+                        const categoryPackages = getPackagesByCategory(category.id);
+                        if (categoryPackages.length === 0) return null;
                         
                         return (
                             <div key={category.id} className="space-y-3">
-                                {/* Kategori Başlık */}
+                                {/* Kategori Başlık - Düz ve büyük */}
                                 <h2 className="text-base lg:text-lg font-bold text-slate-800 border-b border-slate-200 pb-2">
                                     {category.label}
                                 </h2>
 
-                                {/* 3 Paket Kartı Yan Yana */}
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                    {catPkgs.packages.map((pkg, idx) => {
-                                        const fullName = `${category.label} - ${pkg.name}`;
-                                        const isSelected = selectedPackage === fullName;
-                                        
+                                {/* Paket Kartları */}
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 lg:gap-3">
+                                    {categoryPackages.map((pkg, idx) => {
+                                        const isSelected = selectedPackage === pkg.name;
                                         return (
                                             <div
                                                 key={idx}
-                                                onClick={() => handlePackageSelect(category.label, pkg.name, pkg.price)}
+                                                onClick={() => handlePackageSelect(pkg.name)}
                                                 className={`
-                                                    group relative rounded-xl border bg-white shadow-sm transition-all duration-300 cursor-pointer overflow-hidden p-4
+                                                    group relative rounded-xl border bg-white shadow-sm transition-all duration-300 cursor-pointer overflow-hidden p-3
                                                     ${isSelected
                                                         ? 'border-green-500 ring-2 ring-green-500 shadow-md bg-green-50/30'
-                                                        : pkg.isPopular 
-                                                            ? 'border-blue-300 shadow-md hover:shadow-lg hover:border-blue-400'
-                                                            : 'border-slate-200 hover:shadow-md hover:border-blue-300'
+                                                        : 'border-slate-200 hover:shadow-md hover:border-blue-300'
                                                     }
                                                 `}
                                             >
-                                                {/* Popüler Badge */}
-                                                {pkg.isPopular && !isSelected && (
-                                                    <div className="absolute top-0 right-0 bg-blue-600 text-white text-[9px] font-bold px-2 py-1 rounded-bl-lg">
-                                                        Popüler
-                                                    </div>
-                                                )}
-
-                                                {/* Paket İsmi */}
-                                                <h3 className={`font-bold text-lg mb-1 ${isSelected ? 'text-green-700' : pkg.isPopular ? 'text-blue-700' : 'text-slate-800'}`}>
+                                                {/* İsim */}
+                                                <h3 className={`font-bold text-slate-800 group-hover:text-blue-700 transition-colors text-sm lg:text-base leading-snug mb-2 ${isSelected ? 'text-green-700' : ''}`}>
                                                     {pkg.name}
                                                 </h3>
 
-                                                {/* Açıklama */}
-                                                <p className="text-xs text-slate-500 mb-3 leading-relaxed">
-                                                    {pkg.desc}
-                                                </p>
-
-                                                {/* Fiyat */}
-                                                <div className="flex items-baseline gap-2 mb-3">
-                                                    <span className={`font-bold text-xl ${isSelected ? 'text-green-600' : pkg.isPopular ? 'text-blue-600' : 'text-slate-900'}`}>
-                                                        {pkg.price}
-                                                    </span>
-                                                    <span className="text-sm text-red-500 line-through bg-red-50 px-1.5 py-0.5 rounded">
-                                                        {pkg.oldPrice}
-                                                    </span>
+                                                {/* Fiyatlar - Eski fiyat daha büyük */}
+                                                <div className="flex items-baseline gap-2.5 flex-wrap">
+                                                    <span className="font-semibold text-slate-800 text-base lg:text-lg tracking-tight">{pkg.price}</span>
+                                                    {pkg.oldPrice && (
+                                                        <span className="text-base lg:text-xl font-bold text-red-500 line-through decoration-red-500 decoration-2 bg-red-50 px-2 py-0.5 rounded">
+                                                            {pkg.oldPrice}
+                                                        </span>
+                                                    )}
                                                 </div>
 
-                                                {/* Seç Butonu */}
-                                                <div className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-bold transition-all ${
-                                                    isSelected 
-                                                        ? 'bg-green-600 text-white' 
-                                                        : pkg.isPopular
-                                                            ? 'bg-blue-600 text-white group-hover:bg-blue-700'
-                                                            : 'bg-slate-200 text-slate-800 group-hover:bg-blue-600 group-hover:text-white'
-                                                }`}>
-                                                    {isSelected ? (
-                                                        <>
-                                                            <Check className="w-4 h-4" />
-                                                            Seçildi
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            Teklif Al
-                                                            <ArrowRight className="w-4 h-4" />
-                                                        </>
-                                                    )}
+                                                {/* Alt kısım - minimal */}
+                                                <div className={`mt-2 pt-2 border-t text-xs font-semibold ${isSelected ? 'border-green-200 text-green-600' : 'border-slate-100 text-blue-600 group-hover:text-blue-700'}`}>
+                                                    {isSelected ? '✓ Seçildi' : 'Teklif Al →'}
                                                 </div>
                                             </div>
                                         );
