@@ -16,7 +16,6 @@ import {
     Briefcase,
     Home,
     CheckCircle2,
-    ChevronDown,
     Layers
 } from 'lucide-react';
 import { sendAdLeadForm } from '@/actions/contact';
@@ -30,14 +29,30 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
     </svg>
 );
 
+// Kategori tanımları
+interface CategoryItem {
+    id: string;
+    label: string;
+    icon: React.ElementType;
+    badgeColor: string;
+}
+
+interface PackageItem {
+    name: string;
+    price: string;
+    oldPrice: string;
+    desc: string;
+    badge: string;
+    badgeColor: string;
+    category: string;
+}
+
 export function GetOfferContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [activeTab, setActiveTab] = useState('web');
     const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [isMobileTabOpen, setIsMobileTabOpen] = useState(false);
 
     // UTM params for tracking
     const [utmParams, setUtmParams] = useState({
@@ -64,89 +79,46 @@ export function GetOfferContent() {
         message: ''
     });
 
-    const categories = [
-        { id: 'web', label: 'Web Tasarım', icon: Globe },
-        { id: 'sectoral', label: 'Sektörel Çözümler', icon: Briefcase },
-        { id: 'ecommerce', label: 'E-Ticaret', icon: ShoppingBag },
-        { id: 'social', label: 'Sosyal Medya', icon: Megaphone },
-        { id: 'software', label: 'Özel Yazılım', icon: Cpu },
+    // Kategoriler - Sıralama: Web Tasarım → Sektörel → Sosyal Medya → Özel Yazılım → E-Ticaret
+    const categories: CategoryItem[] = [
+        { id: 'web', label: 'Web Tasarım Paketleri', icon: Globe, badgeColor: 'bg-blue-600 text-white' },
+        { id: 'sectoral', label: 'Sektörel Çözümler', icon: Briefcase, badgeColor: 'bg-emerald-600 text-white' },
+        { id: 'social', label: 'Sosyal Medya', icon: Megaphone, badgeColor: 'bg-rose-600 text-white' },
+        { id: 'software', label: 'Özel Yazılım', icon: Cpu, badgeColor: 'bg-slate-800 text-white' },
+        { id: 'ecommerce', label: 'E-Ticaret', icon: ShoppingBag, badgeColor: 'bg-purple-600 text-white' },
     ];
 
-    const packages = {
-        web: [
-            {
-                name: "Sektöre Özel Web Sitesi",
-                price: "2.999 ₺",
-                oldPrice: "7.999 ₺",
-                desc: "Hızlı, ekonomik ve şık çözüm.",
-                badge: "KAMPANYA",
-                badgeColor: "bg-teal-600 text-white"
-            },
-            {
-                name: "Kurumsal Web Sitesi",
-                price: "7.500 ₺",
-                oldPrice: "12.000 ₺",
-                desc: "Tam kapsamlı kurumsal kimlik.",
-                badge: "PROFESYONEL",
-                badgeColor: "bg-blue-600 text-white"
-            }
-        ],
-        sectoral: [
-            { name: "Klinik & Sağlık", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Randevu odaklı.", badge: "SAĞLIK", badgeColor: "bg-teal-500 text-white" },
-            { name: "Hukuk & Avukat", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Kurumsal ve prestijli.", badge: "HUKUK", badgeColor: "bg-slate-700 text-white" },
-            { name: "E-Ticaret Katalog", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Ürün kataloğu.", badge: "E-TİCARET", badgeColor: "bg-purple-500 text-white" },
-            { name: "İnşaat & Mimarlık", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Proje galerisi.", badge: "İNŞAAT", badgeColor: "bg-orange-500 text-white" },
-            { name: "Oto Galeri", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Araç portföyü.", badge: "OTOMOTİV", badgeColor: "bg-red-500 text-white" },
-            { name: "Turizm & Hotel", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Rezervasyon.", badge: "TURİZM", badgeColor: "bg-cyan-500 text-white" },
-            { name: "Eğitim & Kurs", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Ders programı.", badge: "EĞİTİM", badgeColor: "bg-yellow-500 text-slate-900" },
-            { name: "Restoran & Cafe", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "QR Menü.", badge: "GIDA", badgeColor: "bg-rose-500 text-white" },
-        ],
-        ecommerce: [
-            {
-                name: "E-Ticaret Başlangıç",
-                price: "15.000 ₺",
-                oldPrice: "25.000 ₺",
-                desc: "Online satışa hemen başlayın.",
-                badge: "STARTUP",
-                badgeColor: "bg-purple-600 text-white"
-            },
-            {
-                name: "E-Ticaret Pro",
-                price: "35.000 ₺",
-                oldPrice: "60.000 ₺",
-                desc: "Hacimli satışlar için güçlü altyapı.",
-                badge: "İLERİ DÜZEY",
-                badgeColor: "bg-indigo-600 text-white"
-            }
-        ],
-        social: [
-            {
-                name: "Sosyal Medya Yönetimi",
-                price: "7.500 ₺",
-                oldPrice: "12.500 ₺",
-                desc: "Markanız sosyal medyada parlasın.",
-                badge: "AYLIK",
-                badgeColor: "bg-rose-600 text-white"
-            },
-            {
-                name: "Tam Kapsamlı Dijital",
-                price: "19.000 ₺",
-                oldPrice: "30.000 ₺",
-                desc: "Reklam ve yönetim bir arada.",
-                badge: "FULL PAKET",
-                badgeColor: "bg-orange-600 text-white"
-            }
-        ],
-        software: [
-            {
-                name: "Özel Yazılım Projesi",
-                price: "Teklif Al",
-                oldPrice: "",
-                desc: "Size özel butik çözümler.",
-                badge: "KURUMSAL",
-                badgeColor: "bg-slate-800 text-white"
-            }
-        ]
+    // Tüm paketler tek bir dizide, kategori bilgisiyle birlikte
+    const allPackages: PackageItem[] = [
+        // Web Tasarım Paketleri
+        { category: 'web', name: "Sektöre Özel Web Sitesi", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Hızlı, ekonomik ve şık çözüm.", badge: "KAMPANYA", badgeColor: "bg-teal-600 text-white" },
+        { category: 'web', name: "Kurumsal Web Sitesi", price: "7.500 ₺", oldPrice: "12.000 ₺", desc: "Tam kapsamlı kurumsal kimlik.", badge: "PROFESYONEL", badgeColor: "bg-blue-600 text-white" },
+        
+        // Sektörel Çözümler
+        { category: 'sectoral', name: "Klinik & Sağlık", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Randevu odaklı.", badge: "SAĞLIK", badgeColor: "bg-teal-500 text-white" },
+        { category: 'sectoral', name: "Hukuk & Avukat", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Kurumsal ve prestijli.", badge: "HUKUK", badgeColor: "bg-slate-700 text-white" },
+        { category: 'sectoral', name: "E-Ticaret Katalog", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Ürün kataloğu.", badge: "E-TİCARET", badgeColor: "bg-purple-500 text-white" },
+        { category: 'sectoral', name: "İnşaat & Mimarlık", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Proje galerisi.", badge: "İNŞAAT", badgeColor: "bg-orange-500 text-white" },
+        { category: 'sectoral', name: "Oto Galeri", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Araç portföyü.", badge: "OTOMOTİV", badgeColor: "bg-red-500 text-white" },
+        { category: 'sectoral', name: "Turizm & Hotel", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Rezervasyon.", badge: "TURİZM", badgeColor: "bg-cyan-500 text-white" },
+        { category: 'sectoral', name: "Eğitim & Kurs", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "Ders programı.", badge: "EĞİTİM", badgeColor: "bg-yellow-500 text-slate-900" },
+        { category: 'sectoral', name: "Restoran & Cafe", price: "2.999 ₺", oldPrice: "7.999 ₺", desc: "QR Menü.", badge: "GIDA", badgeColor: "bg-rose-500 text-white" },
+        
+        // Sosyal Medya
+        { category: 'social', name: "Sosyal Medya Yönetimi", price: "7.500 ₺", oldPrice: "12.500 ₺", desc: "Markanız sosyal medyada parlasın.", badge: "AYLIK", badgeColor: "bg-rose-600 text-white" },
+        { category: 'social', name: "Tam Kapsamlı Dijital", price: "19.000 ₺", oldPrice: "30.000 ₺", desc: "Reklam ve yönetim bir arada.", badge: "FULL PAKET", badgeColor: "bg-orange-600 text-white" },
+        
+        // Özel Yazılım
+        { category: 'software', name: "Özel Yazılım Projesi", price: "Teklif Al", oldPrice: "", desc: "Size özel butik çözümler.", badge: "KURUMSAL", badgeColor: "bg-slate-800 text-white" },
+        
+        // E-Ticaret
+        { category: 'ecommerce', name: "E-Ticaret Başlangıç", price: "15.000 ₺", oldPrice: "25.000 ₺", desc: "Online satışa hemen başlayın.", badge: "STARTUP", badgeColor: "bg-purple-600 text-white" },
+        { category: 'ecommerce', name: "E-Ticaret Pro", price: "35.000 ₺", oldPrice: "60.000 ₺", desc: "Hacimli satışlar için güçlü altyapı.", badge: "İLERİ DÜZEY", badgeColor: "bg-indigo-600 text-white" },
+    ];
+
+    // Kategoriye göre paketleri grupla
+    const getPackagesByCategory = (categoryId: string) => {
+        return allPackages.filter(pkg => pkg.category === categoryId);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -156,6 +128,11 @@ export function GetOfferContent() {
 
     const handlePackageSelect = (pkgName: string) => {
         setSelectedPackage(pkgName);
+        // Not alanını otomatik doldur
+        setFormData(prev => ({
+            ...prev,
+            message: `${pkgName} hakkında bilgi almak istiyorum.`
+        }));
         const formElement = document.getElementById('offer-form');
         if (formElement) {
             formElement.scrollIntoView({ behavior: 'smooth' });
@@ -172,7 +149,7 @@ export function GetOfferContent() {
             data.append('phone', formData.phone);
             data.append('email', formData.email);
             data.append('message', formData.message);
-            data.append('service', activeTab);
+            data.append('service', 'all');
             data.append('selectedPackage', selectedPackage || 'Genel Teklif');
             data.append('utm_source', utmParams.utm_source);
             data.append('utm_medium', utmParams.utm_medium);
@@ -195,10 +172,6 @@ export function GetOfferContent() {
         } finally {
             setIsSubmitting(false);
         }
-    };
-
-    const getActiveCategoryLabel = () => {
-        return categories.find(c => c.id === activeTab)?.label || 'Kategori Seçin';
     };
 
     if (isSubmitted) {
@@ -256,8 +229,8 @@ export function GetOfferContent() {
             {/* Mobile First Layout Order: Form First (Order-1), Content Second (Order-2) */}
 
             {/* RIGHT COLUMN (Form) - Reordered for Mobile */}
-            <div className="w-full lg:w-5/12 bg-white flex flex-col justify-center border-l border-slate-100 shadow-2xl shadow-slate-200/50 z-30 lg:h-screen lg:sticky lg:top-0 order-1 lg:order-2 lg:overflow-y-auto mt-12 lg:mt-0 pt-4 lg:pt-0">
-                <div id="offer-form" className="p-4 md:p-8 lg:p-10 xl:p-12 w-full max-w-lg mx-auto">
+            <div className="w-full lg:w-[380px] xl:w-[420px] bg-white flex flex-col justify-center border-l border-slate-100 shadow-2xl shadow-slate-200/50 z-30 lg:h-screen lg:sticky lg:top-0 order-1 lg:order-2 lg:overflow-y-auto mt-12 lg:mt-0 pt-4 lg:pt-0 flex-shrink-0">
+                <div id="offer-form" className="p-4 md:p-6 lg:p-8 w-full">
 
                     <div className="mb-4 lg:mb-6 text-center lg:text-left">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 text-green-700 text-[10px] lg:text-xs font-bold uppercase tracking-wide mb-2 border border-green-100">
@@ -310,7 +283,7 @@ export function GetOfferContent() {
                                     value={formData.message}
                                     onChange={handleChange}
                                     className="w-full px-3 pb-2 bg-transparent outline-none text-slate-900 font-semibold placeholder:text-slate-300 resize-none text-sm"
-                                    placeholder={selectedPackage ? `${selectedPackage} hakkında bilgi almak istiyorum.` : "Projenizden kısaca bahsedin..."}
+                                    placeholder="Projenizden kısaca bahsedin..."
                                 />
                             </div>
                         </div>
@@ -363,9 +336,9 @@ export function GetOfferContent() {
             </div>
 
             {/* LEFT COLUMN (Content & Packages) - Second on Mobile */}
-            <div className="w-full lg:w-7/12 p-3 lg:p-4 xl:p-8 flex flex-col relative order-2 lg:order-1 lg:h-screen lg:overflow-y-auto lg:pt-8 pb-16 bg-slate-50">
+            <div className="w-full lg:flex-1 p-3 lg:p-6 xl:p-8 flex flex-col relative order-2 lg:order-1 lg:h-screen lg:overflow-y-auto lg:pt-6 pb-16 bg-slate-50">
                 {/* Desktop Header Links */}
-                <div className="hidden lg:flex gap-3 mb-6 pl-4">
+                <div className="hidden lg:flex gap-3 mb-4 pl-2">
                     <button onClick={() => router.push('/')} className="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-blue-600 transition-colors bg-white px-4 py-2 rounded-full border border-slate-200 hover:border-blue-200 hover:shadow-sm">
                         <Home className="w-4 h-4" /> Anasayfaya Dön
                     </button>
@@ -374,116 +347,82 @@ export function GetOfferContent() {
                     </button>
                 </div>
 
-                <div className="max-w-4xl mx-auto w-full space-y-4 lg:space-y-6 pb-8">
+                <div className="max-w-6xl mx-auto w-full space-y-5 lg:space-y-6 pb-8">
                     <div className="space-y-1 lg:space-y-2 px-1 lg:px-0 text-center lg:text-left">
-                        <h1 className="text-xl lg:text-4xl font-black text-slate-900 leading-[1.2] tracking-tight">
-                            Hizmet Paketlerini{' '}
-                            <span className="text-blue-700">İnceleyin</span>
+                        <h1 className="text-xl lg:text-3xl font-black text-slate-900 leading-[1.2] tracking-tight">
+                            İlgilendiğiniz Paketi{' '}
+                            <span className="text-blue-700">Seçin</span>
                         </h1>
-                        <p className="text-xs lg:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                            Size en uygun paketi seçin, formda otomatik olarak işaretlensin. Uzman ekibimiz detaylı fiyat teklifi ve proje planı ile hızlıca dönüş yapsın.
+                        <p className="text-xs lg:text-sm text-slate-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                            Size en uygun paketi seçin, formda otomatik olarak işaretlensin.
                         </p>
                     </div>
 
-                    {/* MOBILE: Dropdown Tab Selector */}
-                    <div className="lg:hidden relative">
-                        <button
-                            onClick={() => setIsMobileTabOpen(!isMobileTabOpen)}
-                            className="w-full flex items-center justify-between gap-2 px-4 py-3 bg-white rounded-xl border border-slate-200 shadow-sm text-sm font-bold text-slate-700"
-                        >
-                            <div className="flex items-center gap-2">
-                                {React.createElement(categories.find(c => c.id === activeTab)?.icon || Globe, { className: "w-4 h-4 text-blue-600" })}
-                                {getActiveCategoryLabel()}
-                            </div>
-                            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isMobileTabOpen ? 'rotate-180' : ''}`} />
-                        </button>
-
-                        {isMobileTabOpen && (
-                            <div className="absolute top-full left-0 w-full mt-1 bg-white rounded-xl border border-slate-200 shadow-lg z-30 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                                {categories.map((cat) => (
-                                    <button
-                                        key={cat.id}
-                                        onClick={() => { setActiveTab(cat.id); setIsMobileTabOpen(false); }}
-                                        className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold transition-colors ${activeTab === cat.id ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50'}`}
-                                    >
-                                        <cat.icon className="w-4 h-4" />
-                                        {cat.label}
-                                        {activeTab === cat.id && <Check className="w-4 h-4 ml-auto" />}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* DESKTOP: Regular Tabs */}
-                    <div className="hidden lg:block sticky top-0 z-20 bg-slate-50 py-2">
-                        <div className="flex flex-wrap gap-2 p-1 bg-white border border-slate-200 rounded-xl shadow-sm">
-                            {categories.map((cat) => (
-                                <button
-                                    key={cat.id}
-                                    onClick={() => setActiveTab(cat.id)}
-                                    className={`
-                                        flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all duration-300 whitespace-nowrap
-                                        ${activeTab === cat.id
-                                            ? 'bg-slate-900 text-white shadow-md'
-                                            : 'bg-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-                                        }
-                                    `}
-                                >
-                                    <cat.icon className="w-3.5 h-3.5" />
-                                    {cat.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* PACKAGES GRID - Compact for Sectoral */}
-                    <div className={`grid gap-2 lg:gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500 ${activeTab === 'sectoral' ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 md:grid-cols-2'}`}>
-                        {packages[activeTab as keyof typeof packages].map((pkg, idx) => {
-                            const isSelected = selectedPackage === pkg.name;
-                            return (
-                                <div
-                                    key={idx}
-                                    onClick={() => handlePackageSelect(pkg.name)}
-                                    className={`
-                                        group relative rounded-xl lg:rounded-2xl border bg-white shadow-sm transition-all duration-300 cursor-pointer overflow-hidden
-                                        ${activeTab === 'sectoral' ? 'p-3' : 'p-4 lg:p-5'}
-                                        ${isSelected
-                                            ? 'border-blue-600 ring-2 ring-blue-600 shadow-lg bg-blue-50/50'
-                                            : 'border-slate-100 hover:shadow-md hover:border-blue-200'
-                                        }
-                                    `}
-                                >
-                                    {/* Badge */}
-                                    <div className={`absolute top-0 right-0 px-2 py-0.5 rounded-bl-lg text-[8px] lg:text-[9px] font-bold tracking-wider uppercase ${pkg.badgeColor}`}>
-                                        {pkg.badge}
+                    {/* TÜM KATEGORİLER VE PAKETLER */}
+                    {categories.map((category) => {
+                        const categoryPackages = getPackagesByCategory(category.id);
+                        if (categoryPackages.length === 0) return null;
+                        
+                        return (
+                            <div key={category.id} className="space-y-2">
+                                {/* Kategori Badge */}
+                                <div className="flex items-center gap-2">
+                                    <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] lg:text-xs font-bold uppercase tracking-wide ${category.badgeColor}`}>
+                                        <category.icon className="w-3.5 h-3.5" />
+                                        {category.label}
                                     </div>
-
-                                    <div className={`${activeTab === 'sectoral' ? 'space-y-1.5' : 'space-y-2 lg:space-y-3'}`}>
-                                        <h3 className={`font-bold text-slate-900 group-hover:text-blue-700 transition-colors pr-6 ${activeTab === 'sectoral' ? 'text-xs lg:text-sm' : 'text-sm lg:text-base'} ${isSelected ? 'text-blue-700' : ''}`}>
-                                            {pkg.name}
-                                        </h3>
-
-                                        <div className="flex flex-col items-start gap-0">
-                                            {pkg.oldPrice && <span className="text-[10px] lg:text-xs text-slate-400 line-through font-medium">{pkg.oldPrice}</span>}
-                                            <span className={`font-black text-slate-900 tracking-tight ${activeTab === 'sectoral' ? 'text-base lg:text-lg' : 'text-xl lg:text-2xl'}`}>{pkg.price}</span>
-                                        </div>
-
-                                        <p className={`text-slate-500 font-medium ${activeTab === 'sectoral' ? 'text-[10px] lg:text-xs' : 'text-xs lg:text-sm'}`}>
-                                            {pkg.desc}
-                                        </p>
-                                    </div>
-
-                                    <div className={`flex items-center justify-between font-bold uppercase tracking-wide transition-colors ${activeTab === 'sectoral' ? 'mt-2 pt-2 text-[9px]' : 'mt-3 pt-3 text-[10px] lg:text-xs'} border-t border-slate-100 ${isSelected ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600'}`}>
-                                        <span>{isSelected ? 'Seçildi ✓' : 'Seç'}</span>
-                                        <div className={`p-1 rounded-full transition-all duration-300 ${isSelected ? 'bg-blue-600 text-white' : 'bg-slate-50 text-slate-400 group-hover:bg-blue-600 group-hover:text-white'}`}>
-                                            {isSelected ? <Check className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
-                                        </div>
-                                    </div>
+                                    <div className="flex-1 h-px bg-slate-200" />
                                 </div>
-                            );
-                        })}
-                    </div>
+
+                                {/* Paket Kartları - Her satırda max 4 */}
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4">
+                                    {categoryPackages.map((pkg, idx) => {
+                                        const isSelected = selectedPackage === pkg.name;
+                                        return (
+                                            <div
+                                                key={idx}
+                                                onClick={() => handlePackageSelect(pkg.name)}
+                                                className={`
+                                                    group relative rounded-xl lg:rounded-2xl border bg-white shadow-sm transition-all duration-300 cursor-pointer overflow-hidden p-3 lg:p-4
+                                                    ${isSelected
+                                                        ? 'border-blue-600 ring-2 ring-blue-600 shadow-lg bg-blue-50/50'
+                                                        : 'border-slate-100 hover:shadow-md hover:border-blue-200'
+                                                    }
+                                                `}
+                                            >
+                                                {/* Badge */}
+                                                <div className={`absolute top-0 right-0 px-2 py-0.5 rounded-bl-lg text-[8px] lg:text-[9px] font-bold tracking-wider uppercase ${pkg.badgeColor}`}>
+                                                    {pkg.badge}
+                                                </div>
+
+                                                <div className="space-y-1.5 lg:space-y-2">
+                                                    <h3 className={`font-bold text-slate-900 group-hover:text-blue-700 transition-colors pr-10 text-xs lg:text-sm leading-tight ${isSelected ? 'text-blue-700' : ''}`}>
+                                                        {pkg.name}
+                                                    </h3>
+
+                                                    <div className="flex flex-col items-start gap-0">
+                                                        {pkg.oldPrice && <span className="text-[10px] lg:text-xs text-slate-400 line-through font-medium">{pkg.oldPrice}</span>}
+                                                        <span className="font-black text-slate-900 tracking-tight text-base lg:text-xl">{pkg.price}</span>
+                                                    </div>
+
+                                                    <p className="text-slate-500 font-medium text-[10px] lg:text-xs leading-tight">
+                                                        {pkg.desc}
+                                                    </p>
+                                                </div>
+
+                                                <div className={`flex items-center justify-between font-bold uppercase tracking-wide transition-colors mt-2 pt-2 text-[9px] lg:text-[10px] border-t border-slate-100 ${isSelected ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600'}`}>
+                                                    <span>{isSelected ? 'Seçildi ✓' : 'Seç'}</span>
+                                                    <div className={`p-1 rounded-full transition-all duration-300 ${isSelected ? 'bg-blue-600 text-white' : 'bg-slate-50 text-slate-400 group-hover:bg-blue-600 group-hover:text-white'}`}>
+                                                        {isSelected ? <Check className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>
